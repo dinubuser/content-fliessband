@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="flamme"><path d="M86 150 Q100 194 114 150 Z" fill="#FA6317"/></g>
+  <path d="M100 14 C130 40 138 90 128 150 L72 150 C62 90 70 40 100 14 Z" fill="#F8F6F2" stroke="#0B111E" stroke-width="8" stroke-linejoin="round"/>
+  <circle cx="100" cy="74" r="16" fill="#FA6317" stroke="#0B111E" stroke-width="6"/>
+  <path d="M72 110 L46 150 L72 150 Z M128 110 L154 150 L128 150 Z" fill="#FA6317" stroke="#0B111E" stroke-width="6" stroke-linejoin="round"/>
+</svg>

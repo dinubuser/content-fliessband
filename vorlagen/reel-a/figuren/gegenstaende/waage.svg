@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect x="94" y="56" width="12" height="114" rx="6" fill="#0B111E"/>
+  <rect x="56" y="164" width="88" height="14" rx="7" fill="#0B111E"/>
+  <g id="balken">
+    <path d="M28 56 L172 56" stroke="#0B111E" stroke-width="10" stroke-linecap="round"/>
+    <path d="M28 56 L14 108 M28 56 L42 108 M172 56 L158 108 M172 56 L186 108" stroke="#0B111E" stroke-width="4" fill="none"/>
+    <path d="M8 108 Q28 136 48 108 Z" fill="#FA6317"/>
+    <path d="M152 108 Q172 136 192 108 Z" fill="#0B111E"/>
+  </g>
+  <circle cx="100" cy="56" r="10" fill="#FA6317"/>
+</svg>

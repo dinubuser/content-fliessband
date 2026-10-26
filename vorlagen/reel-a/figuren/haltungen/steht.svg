@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300">
+  <g id="koerper">
+    <path d="M88 198 L84 284 M112 198 L116 284" stroke="#0B111E" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <rect x="68" y="110" width="64" height="96" rx="20" fill="#FA6317"/>
+    <path d="M74 122 L58 182 M126 122 L142 182" stroke="#0B111E" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <g id="kopf">
+      <circle cx="100" cy="72" r="30" fill="#F8F6F2" stroke="#0B111E" stroke-width="6"/>
+      <path d="M72 66 Q100 28 128 66 Q116 54 100 54 Q84 54 72 66 Z" fill="#0B111E"/>
+      <path d="M78 82 Q100 104 122 82 L122 90 Q100 114 78 90 Z" fill="#0B111E"/>
+      <circle cx="90" cy="72" r="3.5" fill="#0B111E"/>
+      <circle cx="110" cy="72" r="3.5" fill="#0B111E"/>
+    </g>
+  </g>
+</svg>

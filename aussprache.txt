@@ -1,0 +1,7 @@
+# Aussprache-Liste für die ElevenLabs-Stimme.
+# Eine Zeile pro Eintrag: Wort → Ersatz. Immer genau ein Wort durch ein Wort.
+# Gilt nur für den gesprochenen Text, die Untertitel zeigen das Original.
+# Wörter mit Bindestrich (z.B. Glace-Becher) werden nicht ersetzt.
+# Die Beispiele unten nur als Vorlage: eigene Einträge ergänzen oder löschen.
+Glace → Eis
+DM → Direktnachricht

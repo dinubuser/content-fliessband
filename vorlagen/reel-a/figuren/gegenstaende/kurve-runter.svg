@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <path d="M24 24 L24 176 L184 176" stroke="#0B111E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <g id="kurve">
+    <path d="M36 50 L80 92 L110 78 L156 140" stroke="#FA6317" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M140 146 L172 162 L168 126 Z" fill="#FA6317"/>
+  </g>
+</svg>

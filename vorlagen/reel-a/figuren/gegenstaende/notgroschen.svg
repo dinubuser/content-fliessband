@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="muenze"><circle cx="100" cy="24" r="16" fill="#FA6317" stroke="#0B111E" stroke-width="5"/></g>
+  <path d="M36 112 C22 110 20 96 32 94" fill="none" stroke="#0B111E" stroke-width="6" stroke-linecap="round"/>
+  <rect x="54" y="150" width="20" height="32" rx="6" fill="#0B111E"/>
+  <rect x="118" y="150" width="20" height="32" rx="6" fill="#0B111E"/>
+  <ellipse cx="96" cy="122" rx="62" ry="46" fill="#FA6317" stroke="#0B111E" stroke-width="6"/>
+  <path d="M120 84 L131 66 L142 89 Z" fill="#FA6317" stroke="#0B111E" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="160" cy="124" rx="16" ry="18" fill="#FA6317" stroke="#0B111E" stroke-width="6"/>
+  <circle cx="155" cy="124" r="3.5" fill="#0B111E"/>
+  <circle cx="166" cy="124" r="3.5" fill="#0B111E"/>
+  <circle cx="132" cy="106" r="6" fill="#0B111E"/>
+  <rect x="80" y="70" width="40" height="9" rx="4" fill="#0B111E"/>
+</svg>

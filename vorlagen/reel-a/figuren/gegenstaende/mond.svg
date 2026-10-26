@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="mond"><path d="M128 24 C78 30 48 70 54 116 C60 160 104 186 150 172 C108 160 86 120 96 78 C102 54 112 36 128 24 Z" fill="#0B111E"/></g>
+  <path d="M150 70 L156 82 L168 86 L156 90 L150 102 L144 90 L132 86 L144 82 Z" fill="#FA6317"/>
+  <circle cx="164" cy="138" r="7" fill="#FA6317"/>
+</svg>

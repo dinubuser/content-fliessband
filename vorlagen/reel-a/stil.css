@@ -1,0 +1,62 @@
+/* Eigener Name statt "Inter" und keine benannten Ersatzschriften (Helvetica, Arial): HyperFrames lädt
+   für solche Namen Inter von Google Fonts nach. So rendert immer die mitgelieferte Variable Font
+   (auch Gewicht 750), ohne Netz, und Messen und Rendern nutzen dieselbe Schrift. */
+@font-face {
+  font-family: "InterLokal";
+  src: url("fonts/InterVariable.ttf") format("truetype");
+  font-weight: 100 900;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; background: #F8F6F2; }
+body { color: #0B111E; font-family: "InterLokal", sans-serif; -webkit-font-smoothing: antialiased; }
+
+#root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #F8F6F2; }
+.szene { position: absolute; inset: 0; --s: 1; }
+
+/* Oberer Block: feste Höhe, Überlauf meldet das Messen */
+.oben { position: absolute; left: 90px; right: 90px; top: 260px; height: 900px; overflow: hidden; }
+.balken { width: 150px; height: 22px; background: #FA6317; border-radius: 10px; margin-bottom: 60px; }
+.einblendung { font-weight: 800; line-height: 1.05; letter-spacing: -0.01em; font-size: calc(110px * var(--s)); }
+
+.grafik { margin-top: 80px; font-size: calc(54px * var(--s)); font-weight: 700; }
+.grafik-zahl, .grafik-vergleich { display: flex; flex-direction: column; gap: 28px; align-items: flex-start; }
+.grafik .kachel { background: #0B111E; color: #F8F6F2; padding: 26px 40px; border-radius: 22px; }
+.grafik .kachel.orange { background: #FA6317; color: #FFFFFF; }
+.grafik .pfeil, .grafik .statt { font-weight: 600; opacity: 0.6; padding-left: 10px; }
+.grafik-liste { display: flex; flex-direction: column; gap: 30px; }
+.grafik-liste .punkt { display: flex; gap: 28px; align-items: center; }
+.grafik-liste .marke { flex: none; width: 70px; height: 70px; border-radius: 50%; background: #FA6317; color: #FFFFFF;
+  font-weight: 800; font-size: 40px; display: flex; align-items: center; justify-content: center; }
+
+/* Hook: grosse gesprochene Wörter in der Mitte */
+.hook { position: absolute; left: 80px; right: 80px; top: 560px; height: 700px; overflow: hidden; }
+.hookgruppe { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
+  font-weight: 900; line-height: 1.02; letter-spacing: -0.02em; font-size: calc(150px * var(--s));
+  /* Nur überlange Wörter (z.B. ausgeschriebene Zahlen) trennen, alles andere wird kleiner */
+  hyphens: auto; hyphenate-limit-chars: 22 8 8; }
+.hl { color: #FA6317; }
+
+/* Untertitel unten */
+.untertitel { position: absolute; left: 70px; right: 70px; top: 1380px; height: 260px; }
+.ut { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-weight: 750; font-size: 62px; line-height: 1.25; }
+.ut span { color: #0B111E; }
+
+.hinweis { position: absolute; left: 90px; right: 90px; top: 1690px; font-size: 34px; opacity: 0.7; text-align: center; }
+.fuss { position: absolute; left: 90px; bottom: 80px; font-size: 40px; opacity: 0.7; }
+
+/* Titelbild */
+.cover .oben { top: 520px; }
+.cover .einblendung { font-size: calc(140px * var(--s)); }
+
+/* Figurenszene in der Bildmitte: Figur links der Mitte, Gegenstände rechts auf festen Plätzen.
+   Mit Figur ist der obere Block kürzer, damit nichts die Einblendung überlappt (das Messen prüft das). */
+.mit-figur .oben { height: 520px; }
+.figur { position: absolute; left: 0; right: 0; top: 820px; height: 540px; }
+.figur svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.figur .haltung { position: absolute; left: 170px; top: 0; width: 360px; height: 540px; }
+.figur .platz-1 { position: absolute; left: 590px; top: 20px; width: 250px; height: 250px; }
+.figur .platz-2 { position: absolute; left: 590px; top: 290px; width: 250px; height: 250px; }
+/* Neben einer Grafik: Figur klein unten links, zwischen Grafik und Untertitel */
+.figur.klein { top: 1165px; height: 210px; }
+.figur.klein .haltung { left: 40px; width: 140px; height: 210px; }

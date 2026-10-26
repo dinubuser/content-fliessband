@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="92" cy="108" r="76" fill="#F8F6F2" stroke="#0B111E" stroke-width="8"/>
+  <circle cx="92" cy="108" r="50" fill="#FA6317"/>
+  <circle cx="92" cy="108" r="26" fill="#F8F6F2"/>
+  <circle cx="92" cy="108" r="10" fill="#0B111E"/>
+  <g id="pfeil">
+    <path d="M92 108 L172 28" stroke="#0B111E" stroke-width="8" stroke-linecap="round"/>
+    <path d="M158 20 L184 14 L178 40 Z" fill="#0B111E"/>
+  </g>
+</svg>

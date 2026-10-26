@@ -1,0 +1,4 @@
+#!/bin/bash
+# Startet die Fliessband-CLI mit der Projekt-venv, egal aus welchem Ordner.
+DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+PYTHONPATH="$DIR" exec "$DIR/.venv/bin/python" -m lib.cli "$@"

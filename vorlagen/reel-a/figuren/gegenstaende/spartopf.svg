@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="muenze"><circle cx="100" cy="26" r="16" fill="#FA6317" stroke="#0B111E" stroke-width="5"/></g>
+  <rect x="58" y="56" width="84" height="20" rx="6" fill="#0B111E"/>
+  <rect x="80" y="62" width="40" height="7" rx="3" fill="#F8F6F2"/>
+  <rect x="44" y="74" width="112" height="110" rx="26" fill="#FA6317" stroke="#0B111E" stroke-width="6"/>
+  <path d="M72 122 L128 122" stroke="#F8F6F2" stroke-width="8" stroke-linecap="round"/>
+</svg>

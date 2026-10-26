@@ -1,0 +1,23 @@
+[Unit]
+Description=Content-Fliessband Briefkasten (Freigabe in Telegram)
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+User=fliessband
+Group=fliessband
+WorkingDirectory=/opt/fliessband/app
+Environment=PYTHONUNBUFFERED=1
+# Optional: FLIESSBAND_HOST=<Tailscale-IP des Servers> in /etc/fliessband/konfig.env
+EnvironmentFile=-/etc/fliessband/konfig.env
+ExecStart=/opt/fliessband/venv/bin/python -m briefkasten.dienst
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/fliessband
+
+[Install]
+WantedBy=multi-user.target

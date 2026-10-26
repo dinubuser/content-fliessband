@@ -1,0 +1,29 @@
+# Konfiguration mit Geheimnissen: nie committen (Vorlage: .env.example)
+.env
+.env.*
+!.env.example
+.env.local
+
+# Generierte Daten und Laufzeitstände
+.superpowers/
+wochen/
+logs/
+daten/
+zwischenspeicher/
+brag-output*/
+
+# Abhängigkeiten und Caches
+node_modules/
+__pycache__/
+.venv/
+venv/
+.pytest_cache/
+
+# Schlüssel, Datenbanken, Systemdateien
+*.db
+*.key
+*.pem
+*.p12
+*.pfx
+.claude/settings.local.json
+.DS_Store

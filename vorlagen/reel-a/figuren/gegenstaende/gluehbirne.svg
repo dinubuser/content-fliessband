@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="strahlen"><path d="M100 14 L100 26 M42 34 L52 44 M158 34 L148 44 M20 88 L34 88 M180 88 L166 88" stroke="#FA6317" stroke-width="8" stroke-linecap="round"/></g>
+  <path d="M100 36 C66 36 48 62 52 90 C55 110 72 120 76 140 L124 140 C128 120 145 110 148 90 C152 62 134 36 100 36 Z" fill="#F8F6F2" stroke="#0B111E" stroke-width="8" stroke-linejoin="round"/>
+  <rect x="76" y="148" width="48" height="12" rx="6" fill="#0B111E"/>
+  <rect x="82" y="166" width="36" height="12" rx="6" fill="#0B111E"/>
+  <path d="M88 112 L100 96 L112 112" stroke="#FA6317" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

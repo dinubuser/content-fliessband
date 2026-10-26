@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="lupe">
+    <path d="M126 126 L176 176" stroke="#0B111E" stroke-width="20" stroke-linecap="round"/>
+    <circle cx="84" cy="84" r="60" fill="#F8F6F2" stroke="#0B111E" stroke-width="12"/>
+    <path d="M58 70 C62 58 72 52 84 50" stroke="#FA6317" stroke-width="8" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

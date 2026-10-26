@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="herz">
+    <path d="M100 172 C40 130 16 96 30 62 C44 30 86 30 100 62 C114 30 156 30 170 62 C184 96 160 130 100 172 Z" fill="#FA6317"/>
+    <circle cx="74" cy="84" r="14" fill="#F8F6F2"/><rect x="60" y="100" width="28" height="36" rx="12" fill="#F8F6F2"/>
+    <circle cx="126" cy="84" r="14" fill="#F8F6F2"/><rect x="112" y="100" width="28" height="36" rx="12" fill="#F8F6F2"/>
+    <circle cx="100" cy="110" r="10" fill="#F8F6F2"/><rect x="91" y="122" width="18" height="24" rx="8" fill="#F8F6F2"/>
+  </g>
+</svg>

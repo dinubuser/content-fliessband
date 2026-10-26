@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="82" fill="#F8F6F2" stroke="#0B111E" stroke-width="10"/>
+  <path d="M100 30 L100 44 M100 156 L100 170 M30 100 L44 100 M156 100 L170 100" stroke="#0B111E" stroke-width="8" stroke-linecap="round"/>
+  <path d="M100 100 L134 100" stroke="#0B111E" stroke-width="10" stroke-linecap="round"/>
+  <g id="zeiger"><path d="M100 100 L100 46" stroke="#FA6317" stroke-width="8" stroke-linecap="round"/></g>
+  <circle cx="100" cy="100" r="8" fill="#0B111E"/>
+</svg>

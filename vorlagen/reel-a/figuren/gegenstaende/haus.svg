@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="ding">
+    <rect x="44" y="92" width="112" height="84" fill="#F8F6F2" stroke="#0B111E" stroke-width="8"/>
+    <path d="M28 98 L100 30 L172 98 Z" fill="#FA6317" stroke="#0B111E" stroke-width="8" stroke-linejoin="round"/>
+    <rect x="86" y="128" width="28" height="48" fill="#0B111E"/>
+    <rect x="56" y="110" width="22" height="22" fill="#0B111E"/>
+    <rect x="122" y="110" width="22" height="22" fill="#0B111E"/>
+  </g>
+</svg>

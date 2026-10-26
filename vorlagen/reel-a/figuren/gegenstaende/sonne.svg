@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="strahlen"><path d="M100 12 L100 34 M100 166 L100 188 M12 100 L34 100 M166 100 L188 100 M38 38 L54 54 M146 146 L162 162 M162 38 L146 54 M54 146 L38 162" stroke="#FA6317" stroke-width="12" stroke-linecap="round"/></g>
+  <circle cx="100" cy="100" r="50" fill="#FA6317" stroke="#0B111E" stroke-width="6"/>
+</svg>

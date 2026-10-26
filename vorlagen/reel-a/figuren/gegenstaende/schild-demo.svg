@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect x="94" y="120" width="12" height="70" rx="6" fill="#0B111E"/>
+  <g id="schild">
+    <rect x="20" y="30" width="160" height="96" rx="16" fill="#FA6317" stroke="#0B111E" stroke-width="8"/>
+    <text x="100" y="96" text-anchor="middle" font-family="InterLokal, sans-serif" font-weight="800" font-size="46" fill="#F8F6F2">DEMO</text>
+  </g>
+</svg>

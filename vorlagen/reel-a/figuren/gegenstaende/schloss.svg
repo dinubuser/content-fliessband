@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g id="schloss">
+    <path d="M64 92 L64 62 C64 22 136 22 136 62 L136 92" stroke="#0B111E" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <rect x="40" y="86" width="120" height="96" rx="16" fill="#FA6317" stroke="#0B111E" stroke-width="8"/>
+    <circle cx="100" cy="126" r="12" fill="#0B111E"/>
+    <rect x="94" y="130" width="12" height="28" rx="6" fill="#0B111E"/>
+  </g>
+</svg>

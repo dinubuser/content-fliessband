@@ -1,0 +1,39 @@
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/InterVariable.ttf") format("truetype");
+  font-weight: 100 900;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; background: #F8F6F2; }
+
+.slide {
+  --s: 1;
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  background: #F8F6F2;
+  color: #0B111E;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Feste Höhe: läuft der Inhalt über, meldet der Renderer das */
+.inhalt { position: absolute; top: 110px; left: 90px; right: 90px; height: 1060px; overflow: hidden; }
+
+.balken { width: 170px; height: 25px; background: #FA6317; border-radius: 10px; margin-bottom: 70px; }
+.nummer {
+  display: inline-block; background: #FA6317; color: #FFFFFF;
+  font-weight: 800; font-size: 55px; padding: 15px 35px; border-radius: 15px; margin-bottom: 50px;
+}
+
+.titel { font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; font-size: calc(95px * var(--s)); }
+.typ-schritt .titel, .typ-text .titel, .typ-schluss .titel { font-size: calc(80px * var(--s)); }
+.text { font-size: calc(52px * var(--s)); line-height: 1.4; margin-top: 50px; }
+.hinweis { font-size: calc(36px * var(--s)); opacity: 0.7; margin-top: 40px; }
+.hl { background: linear-gradient(transparent 60%, rgba(250, 99, 23, 0.33) 60%); }
+
+.fuss {
+  position: absolute; left: 90px; right: 90px; bottom: 60px;
+  display: flex; justify-content: space-between; font-size: 42px; opacity: 0.75;
+}
