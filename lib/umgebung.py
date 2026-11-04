@@ -9,15 +9,20 @@ from lib.konfig import wert
 
 HOME = Path.home()
 
+
+def _pfad(name: str, standard: Path) -> Path:
+    """Pfad aus der Konfiguration. «~/…» aus der .env löst Python selbst auf (die Shell tut es hier nicht)."""
+    return Path(wert(name, str(standard))).expanduser()
+
 Werkzeug = Callable[[str, list[str], int], subprocess.CompletedProcess]
 
 
 @dataclass(frozen=True)
 class Pfade:
     basis: Path = STANDARD_BASIS
-    agentur: Path = Path(wert("FLIESSBAND_AGENTUR_DIR", str(HOME / "agentur-daten")))
-    skill: Path = Path(wert("FLIESSBAND_AGENTUR_SKILL", str(HOME / ".claude" / "skills" / "agentur")))
-    agentur_python: Path = Path(wert("FLIESSBAND_AGENTUR_PYTHON", str(HOME / ".agentur-werkzeug" / "venv" / "bin" / "python")))
+    agentur: Path = _pfad("FLIESSBAND_AGENTUR_DIR", HOME / "meine-agentur")
+    skill: Path = _pfad("FLIESSBAND_AGENTUR_SKILL", HOME / ".claude" / "skills" / "agentur")
+    agentur_python: Path = _pfad("FLIESSBAND_AGENTUR_PYTHON", HOME / ".social-agentur" / "venv" / "bin" / "python")
 
     @property
     def daten(self) -> Path:

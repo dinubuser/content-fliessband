@@ -116,6 +116,13 @@ Schlüsselbund (`security add-generic-password`): `fliessband-telegram` (Bot-Tok
 
 ## Anpassen
 
+**Einstellbar in `.env`:** Posttage (`FLIESSBAND_POSTTAGE`, Standard 2,3,4,6 = Di Mi Do Sa), Uhrzeit (`FLIESSBAND_POSTZEIT`, Standard 19:00), Zeitzone des Servers (`FLIESSBAND_ZEITZONE`, Standard Europe/Zurich), Agentur-Pfade (`~/` ist erlaubt). Die Plätze pro Woche stellt der Schalter `./fliessband plaetze 4|6` ein, 6 braucht freie Montage und Freitage.
+
+**Medienweg:** Meta braucht öffentliche Adressen der Bilder und Videos. Dafür ist heute WordPress fest verdrahtet (`lib/mediathek.py`, WordPress-REST mit Anwendungspasswort). Eine andere Ablage ersetzt die Klasse `Mediathek` aus `lib/mediathek.py`: `lade_hoch(datei, name)` liefert `{"wp_id": int, "url": "https://…"}`, `loesche(wp_id)` löscht endgültig (404 gilt als gelöscht), Fehler sind `MediathekFehler`. Eingehängt wird sie in `lib/woche.py` (`Dienste.echt`). Ein eingebauter Weg ohne WordPress ist noch nicht gebaut.
+
+**Look:** Der Standard ist neutral: Schrift Inter (mitgeliefert, OFL), heller Grund `#F8F6F2`, dunkles Blau `#0B111E`, Akzent Orange `#FA6317`. Die Farben stehen in `vorlagen/karussell-a/stil.css`, `vorlagen/reel-a/stil.css` und in den SVG-Figuren unter `vorlagen/reel-a/figuren/`. Das Handle kommt aus `FLIESSBAND_HANDLE`.
+
+
 Die Regeln für Stimme, Marke und Themen sind Beispiele. Sie stehen mit dem Marker `[BEISPIEL ... anpassen]` in `lib/planer.py`, `lib/texter.py`, `lib/lernen.py` und `lib/konkurrenz.py`. Dazu kommen `docs/agents/aussprache-agent.md` (Helvetismen, Handle) und `aussprache.txt` (Wörter für die Stimme).
 
 ## Wichtige Regeln

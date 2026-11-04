@@ -2,6 +2,7 @@
 Öffentliche Methoden laufen hinter einer Sperre: API-Thread, Abhol-Schleife und Zeitgeber teilen alles.
 Termine sind Ortszeit ohne Zeitzone ('2026-10-27T19:00')."""
 import logging
+import os
 import threading
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -10,7 +11,18 @@ from briefkasten import texte
 from briefkasten.telegram import TelegramFehler
 
 LOG = logging.getLogger("briefkasten")
-ZONE = ZoneInfo("Europe/Zurich")
+
+
+def zeitzone() -> ZoneInfo:
+    """Zeitzone der Termine aus FLIESSBAND_ZEITZONE, Standard Europe/Zurich."""
+    name = os.environ.get("FLIESSBAND_ZEITZONE") or "Europe/Zurich"
+    try:
+        return ZoneInfo(name)
+    except (KeyError, ValueError, OSError):   # ZoneInfoNotFoundError ist ein KeyError
+        raise ValueError(f"FLIESSBAND_ZEITZONE '{name}' ist keine bekannte Zeitzone, z.B. Europe/Zurich") from None
+
+
+ZONE = zeitzone()
 FORMATE = ("reel", "karussell")
 ENTSCHEIDE = ("freigegeben", "zurueckgenommen", "aendern", "verworfen", "verpasst")
 ARTEN = ENTSCHEIDE + ("gepostet", "ausgelassen", "nachricht")

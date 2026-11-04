@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Auf dem Mac: bringt den Instagram-Schlüssel der Agentur (~/.agentur-werkzeug/instagram_token und _datum) auf den
+# Auf dem Mac: bringt den Instagram-Schlüssel der Agentur (~/.social-agentur/instagram_token und _datum) auf den
 # Server (/var/lib/fliessband/instagram.json, fliessband:fliessband 600) und startet den Briefkasten neu.
 # Prüft den Schlüssel vorher bei Instagram. Zeigt ihn nie an. Wiederholbar.
 set -euo pipefail
@@ -9,7 +9,7 @@ SERVER="${FLIESSBAND_SERVER:-root@your-server-ip}"
 SSH=(ssh -i "${FLIESSBAND_SSH_KEY:-$HOME/.ssh/your_ssh_key}" -o IdentitiesOnly=yes)
 JSON="$("$DIR/.venv/bin/python" - <<'PY'
 import json, pathlib, sys, urllib.parse, urllib.request
-ordner = pathlib.Path.home() / ".agentur-werkzeug"
+ordner = pathlib.Path.home() / ".social-agentur"
 token = (ordner / "instagram_token").read_text(encoding="utf-8").strip()
 erstellt = (ordner / "instagram_token_datum").read_text(encoding="utf-8").strip()
 url = "https://graph.instagram.com/v26.0/me?" + urllib.parse.urlencode({"fields": "user_id,username", "access_token": token})

@@ -1,9 +1,9 @@
 """Kontozahlen für die Social-Kacheln in AgenticOS (Teil 2): Follower und Aufrufe pro Konto."""
 from datetime import date, datetime, time
 from urllib.parse import parse_qs
-from zoneinfo import ZoneInfo
 
-ZONE = ZoneInfo("Europe/Zurich")
+from briefkasten.ablauf import ZONE
+
 MAX_TAGE = 30
 MAX_FEHLER = 300
 

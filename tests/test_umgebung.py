@@ -3,6 +3,7 @@ from pathlib import Path
 
 from lib.fehler import BAU_FEHLER, einzeilig
 from lib.leser import LeserFehler
+from lib import umgebung
 from lib.umgebung import Pfade, agentur_werkzeug, letzte_zeile
 
 
@@ -18,9 +19,17 @@ def test_pfade(tmp_path):
 def test_standardpfade():
     p = Pfade()
     assert p.basis == Path.home() / "content-fliessband"
-    assert p.agentur == Path.home() / "agentur-daten"
+    assert p.agentur == Path.home() / "meine-agentur"
     assert p.skill == Path.home() / ".claude" / "skills" / "agentur"
-    assert p.agentur_python == Path.home() / ".agentur-werkzeug" / "venv" / "bin" / "python"
+    assert p.agentur_python == Path.home() / ".social-agentur" / "venv" / "bin" / "python"
+
+
+def test_pfad_aus_der_konfiguration_loest_die_tilde_auf(monkeypatch):
+    """In .env.example steht ~/…: Python muss das selbst auflösen, die Shell tut es hier nicht."""
+    monkeypatch.setenv("FLIESSBAND_AGENTUR_DIR", "~/mein-ordner")
+    assert umgebung._pfad("FLIESSBAND_AGENTUR_DIR", Path("/anders")) == Path.home() / "mein-ordner"
+    monkeypatch.delenv("FLIESSBAND_AGENTUR_DIR")
+    assert umgebung._pfad("FLIESSBAND_AGENTUR_DIR", Path("/anders")) == Path("/anders")
 
 
 def _werkzeug(tmp_path, code):

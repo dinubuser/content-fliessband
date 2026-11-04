@@ -14,7 +14,7 @@ Jede Woche läuft derselbe Zyklus:
 2. **Fr 22:00, Planung:** Der Wochen-Planer legt 4 Beiträge fest (2 Reels, 2 Karussells, mit dem Schalter `plaetze` 6) und stellt offene Fragen. Ist der Trend-Scout eingeschaltet, sucht er davor im Web nach aktuellen Themen.
 3. **Sa 22:00, Bau:** Texte, Bilder, Stimme, Video, Aussprache-Check und Faktencheck entstehen automatisch.
 4. **Freigabe in Telegram:** Jeder Beitrag kommt mit ✅ Freigeben, ✏️ Ändern oder ❌ Verwerfen.
-5. **Di, Mi, Do, Sa 19:00:** Der Server postet die freigegebenen Beiträge auf Instagram und, wenn eingeschaltet, auf Facebook.
+5. **Standard Di, Mi, Do, Sa 19:00** (einstellbar mit `FLIESSBAND_POSTTAGE` und `FLIESSBAND_POSTZEIT`): Der Server postet die freigegebenen Beiträge auf Instagram und, wenn eingeschaltet, auf Facebook.
 6. **START-Kommentare:** Der Server liest die Kommentare und meldet jedes «START» in Telegram.
 
 Ohne Freigabe geht nichts online.
@@ -55,7 +55,7 @@ Die Agentur liefert die Texte und die Daten: `profil.md`, `stimme.md`, `learning
 
 ## Einrichtung
 
-1. **Agentur installieren.** Folge der Anleitung im Agentur-Repo. Der Skill muss unter `~/.claude/skills/agentur` liegen, der Agentur-Ordner unter `~/agentur-daten` (Pfade anpassbar in `.env`).
+1. **Agentur installieren.** Folge der Anleitung im Agentur-Repo. Der Skill muss unter `~/.claude/skills/agentur` liegen, der Agentur-Ordner unter `~/meine-agentur` (Pfade anpassbar in `.env`).
 
 2. **Repo klonen:**
 

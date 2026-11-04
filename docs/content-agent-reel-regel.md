@@ -1,7 +1,7 @@
 # Regel für den Content-Agenten: Reels fürs Fliessband
 
 Gehört in `~/.claude/agents/content-agent.md`, unter «Vorgehen», Punkt 3, direkt nach der Zeile «**Reel:** …».
-Nach einem Update der Agentur (`~/.agentur-werkzeug/repo`) prüfen, ob die Regel noch drin ist.
+Nach einem Update der Agentur (`~/.social-agentur/repo`) prüfen, ob die Regel noch drin ist.
 
 ```text
    - **Reel fürs Fliessband:** Jedes Reel bekommt zusätzlich den Abschnitt `## Szenen fürs Fliessband` (eigene `##`-Überschrift). Inhalt: der Voiceover-Text, aufgeteilt in Szenen, in genau diesem Format:

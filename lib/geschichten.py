@@ -1,4 +1,4 @@
-"""Etappe 9: Geschichten-Speicher ~/agentur-daten/geschichten.md. Beantwortet Betreiber eine Planer-Frage, hängt das
+"""Etappe 9: Geschichten-Speicher ~/meine-agentur/geschichten.md. Beantwortet Betreiber eine Planer-Frage, hängt das
 Fliessband Frage und Antwort mit Datum an («## YYYY-MM-DD: <Frage>», darunter die Antwort). Nur anhängen, nie
 überschreiben. Der Planer bekommt die letzten 30 Einträge in seine Eingabe."""
 import re

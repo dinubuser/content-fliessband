@@ -9,7 +9,7 @@ from pathlib import Path
 from lib.claude_lauf import ClaudeFehler, ZeitAbgelaufen
 from lib.fehler import einzeilig
 from lib.figuren import namen_text
-from lib.kalender import FORMAT_NAME, LAENGEN, kurz
+from lib.kalender import FORMAT_NAME, LAENGEN, kurz, uhr
 from lib.leser import LeserFehler, lese_beitrag
 from lib.pruefungen import START
 from lib.reel_leser import lese_reel
@@ -103,7 +103,7 @@ def einladung_regel(format: str) -> str:
 
 
 def beitrag_pfad(pfade: Pfade, thema: dict) -> Path:
-    """Erste Fassung: ~/agentur-daten/beitraege/<Termin-Datum>_<format>_<slug>.md"""
+    """Erste Fassung: ~/meine-agentur/beitraege/<Termin-Datum>_<format>_<slug>.md"""
     return pfade.agentur / "beitraege" / f"{thema['termin'][:10]}_{thema['format']}_{thema['slug']}.md"
 
 
@@ -238,7 +238,7 @@ Schreib ein {FORMAT_NAME[thema['format']]} für Instagram.
 - Hook-Idee des Planers: {thema['hook_idee']}
 {_einstieg_teil(thema)}- Weiterschick-Antwort: {thema['weiterschick']}
 - Quelle: {thema['quelle']['art']}: {thema['quelle']['detail']}
-- Termin: {kurz(thema['termin'])} 19:00
+- Termin: {kurz(thema['termin'])} {uhr(thema['termin'])}
 {_vorlage_teil(thema)}{_antwort_teil(thema)}
 Pflichten:
 - Schreib genau eine Datei: {ziel}. Kein anderer Name, keine weitere Datei.

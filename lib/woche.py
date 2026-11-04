@@ -15,7 +15,7 @@ from lib.bot import VERSAND_GRENZE, Bot, BotFehler, ordne_zu, verkleinere
 from lib.briefkasten import Briefkasten, BriefkastenFehler
 from lib.claude_lauf import ClaudeFehler, ClaudeLauf, Frist, ZeitAbgelaufen, mit_frist
 from lib.fehler import BAU_FEHLER, einzeilig
-from lib.kalender import FORMAT_NAME, KalenderFehler, kurz
+from lib.kalender import FORMAT_NAME, KalenderFehler, kurz, uhr
 from lib.manifest import ManifestFehler
 from lib.mediathek import Mediathek
 from lib.reel_bauer import baue_reel
@@ -249,7 +249,7 @@ def uebersicht(plan: Wochenplan) -> str:
         if t.get("vorlage"):
             quelle += f" @{t['vorlage']['account']}"
         fehlgeschlagen = " · FEHLGESCHLAGEN" if t["status"] == "fehlgeschlagen" else ""
-        z.append(f"{kurz(t['termin'])} 19:00 · {FORMAT_NAME[t['format']]} · {t['thema']}")
+        z.append(f"{kurz(t['termin'])} {uhr(t['termin'])} · {FORMAT_NAME[t['format']]} · {t['thema']}")
         z.append(f"   Quelle: {quelle} · {_test_text(t)}{fehlgeschlagen}")
         if t["vermerk"]:
             z.append(f"   Vermerk: {t['vermerk']}")

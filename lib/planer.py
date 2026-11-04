@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 from lib import geschichten
-from lib.kalender import FORMAT_NAME, LAENGEN, RESERVE_LAENGE, WOCHE_MUSTER, kurz, plaetze, termine
+from lib.kalender import FORMAT_NAME, LAENGEN, RESERVE_LAENGE, WOCHE_MUSTER, kurz, plaetze, termine, uhr
 from lib.umgebung import MAX_CAPTION, MAX_NAME, Pfade, fremd
 from lib.wochenplan import FERTIG, arbeitsfelder
 
@@ -70,7 +70,7 @@ def mit_laenge(themen: list[dict], reserve: list[dict], termine_liste: list[dict
 def eingabe(woche: str, termine_liste: list[dict], ideen: list[str], ausreisser: list[dict],
             frueher: list[dict], pfade: Pfade, trends: list[dict] | None = None) -> str:
     z = [f"# Planer-Eingabe {woche}", "", "## Termine"]
-    z += [f"- Thema {t['nr']}: {FORMAT_NAME[t['format']]}{_laenge_text(t)} am {kurz(t['termin'])} 19:00 "
+    z += [f"- Thema {t['nr']}: {FORMAT_NAME[t['format']]}{_laenge_text(t)} am {kurz(t['termin'])} {uhr(t['termin'])} "
           f"(termin \"{t['termin']}\")" for t in termine_liste]
     z += ["", "## Offene Ideen aus der Apple-Notiz «Content-Ideen» (Vorrang)"]
     z += [f"- {i}" for i in ideen] or ["- keine"]

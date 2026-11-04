@@ -1,19 +1,22 @@
-"""Zielwoche, Termine und Zeitfenster der Wochen-Jobs (lokale Zeit, Europe/Zurich)."""
+"""Zielwoche, Termine und Zeitfenster der Wochen-Jobs (lokale Zeit des Macs).
+
+Posttage und Postzeit sind einstellbar: FLIESSBAND_POSTTAGE (vier Wochentage, 1 = Montag bis 7 = Sonntag, Standard
+2,3,4,6 = Di Mi Do Sa) und FLIESSBAND_POSTZEIT (HH:MM, Standard 19:00). Die Zeitzone des Servers steht in
+FLIESSBAND_ZEITZONE (siehe .env.example)."""
 import json
 import re
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
+from lib.konfig import wert
 from lib.manifest import schreibe_json, woche_von
 
-# Thema-Nr, Format, ISO-Wochentag: Di Reel, Mi Karussell, Do Reel, Sa Karussell, je 19:00
-WOCHENPLAN = [(1, "reel", 2), (2, "karussell", 3), (3, "reel", 4), (4, "karussell", 6)]
-# Sechser-Plan (Schalter «plaetze» = 6, Standard bleibt 4): Mo Karussell und Fr Reel kommen dazu.
-# Die Nummern laufen hier nach Datum, damit Übersicht und Planer in Terminreihenfolge arbeiten.
-WOCHENPLAN_6 = [(1, "karussell", 1), (2, "reel", 2), (3, "karussell", 3), (4, "reel", 4), (5, "reel", 5),
-                (6, "karussell", 6)]
+# Vierer-Plan: Reel, Karussell, Reel, Karussell an den vier Posttagen (Standard Di Mi Do Sa).
+# Sechser-Plan (Schalter «plaetze» = 6, Standard bleibt 4): Mo Karussell und Fr Reel kommen dazu, deshalb müssen
+# Montag und Freitag frei sein. Die Nummern laufen nach Datum, damit Übersicht und Planer in Terminreihenfolge arbeiten.
+STANDARD_POSTTAGE = "2,3,4,6"
+STANDARD_POSTZEIT = "19:00"
 PLAETZE_DATEI = Path("daten") / "plaetze.json"   # relativ zur Basis, nicht in Git; fehlt sie, gilt 4
-UHRZEIT = time(19, 0)
 WOCHE_MUSTER = re.compile(r"^(\d{4})-KW(\d{2})$")
 TAGE = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 FORMAT_NAME = {"reel": "Reel", "karussell": "Karussell"}
@@ -31,6 +34,43 @@ RESERVE_LAENGE = "kurz"
 
 class KalenderFehler(ValueError):
     pass
+
+
+def posttage() -> list[int]:
+    """Die vier Posttage als ISO-Wochentage (1 = Montag bis 7 = Sonntag), aufsteigend, aus FLIESSBAND_POSTTAGE."""
+    roh = wert("FLIESSBAND_POSTTAGE", STANDARD_POSTTAGE)
+    try:
+        tage = [int(x) for x in roh.split(",")]
+    except ValueError:
+        tage = []
+    if len(tage) != 4 or tage != sorted(set(tage)) or not all(1 <= t <= 7 for t in tage):
+        raise KalenderFehler(f"FLIESSBAND_POSTTAGE '{roh}' ungültig: vier verschiedene Wochentage, aufsteigend, "
+                             f"1 = Montag bis 7 = Sonntag, z.B. {STANDARD_POSTTAGE}")
+    return tage
+
+
+def postzeit() -> time:
+    """Uhrzeit aller Posts aus FLIESSBAND_POSTZEIT (HH:MM)."""
+    roh = wert("FLIESSBAND_POSTZEIT", STANDARD_POSTZEIT)
+    m = re.fullmatch(r"(\d{1,2}):(\d{2})", roh.strip())
+    if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
+        raise KalenderFehler(f"FLIESSBAND_POSTZEIT '{roh}' ungültig, erwartet HH:MM, z.B. {STANDARD_POSTZEIT}")
+    return time(int(m.group(1)), int(m.group(2)))
+
+
+def postzeit_text() -> str:
+    return f"{postzeit():%H:%M}"
+
+
+def uhr(termin: str) -> str:
+    """'2026-10-27T19:00' → '19:00'"""
+    return f"{datetime.fromisoformat(termin):%H:%M}"
+
+
+def _pruefe_sechs(tage: list[int]) -> None:
+    if 1 in tage or 5 in tage:
+        raise KalenderFehler("6 Plätze pro Woche brauchen einen freien Montag und Freitag, aber FLIESSBAND_POSTTAGE "
+                             f"enthält {','.join(str(t) for t in tage)}. Entweder 4 Plätze lassen oder die Posttage ändern.")
 
 
 def zielwoche(heute: date) -> str:
@@ -71,20 +111,29 @@ def plaetze(basis: Path) -> int:
 def setze_plaetze(basis: Path, anzahl: int) -> None:
     if anzahl not in (4, 6):
         raise KalenderFehler(f"Plätze pro Woche: nur 4 oder 6, nicht {anzahl}")
+    if anzahl == 6:
+        _pruefe_sechs(posttage())
     schreibe_json(Path(basis) / PLAETZE_DATEI, {"plaetze": anzahl})
 
 
 def termine(woche: str, plaetze: int = 4) -> list[dict]:
-    """Die Termine der Woche (4 oder 6), nach Datum: [{nr, format, termin 'YYYY-MM-DDT19:00'}], Reels mit laenge."""
+    """Die Termine der Woche (4 oder 6), nach Datum: [{nr, format, termin 'YYYY-MM-DDTHH:MM'}], Reels mit laenge."""
     pruefe_woche(woche)
     jahr, kw = int(woche[:4]), int(woche[-2:])
+    tage, zeit = posttage(), postzeit()
+    # (Format, ISO-Wochentag, Reel-Rolle): Rolle 1 und 3 sind die beiden Reels des Vierer-Plans, «kurz» das Zusatz-Reel
+    plan = [("reel", tage[0], 1), ("karussell", tage[1], None), ("reel", tage[2], 3), ("karussell", tage[3], None)]
+    if plaetze == 6:
+        _pruefe_sechs(tage)
+        plan += [("karussell", 1, None), ("reel", 5, "kurz")]
+    plan.sort(key=lambda p: p[1])
     liste = []
-    for nr, format, tag in (WOCHENPLAN_6 if plaetze == 6 else WOCHENPLAN):
+    for nr, (format, tag, rolle) in enumerate(plan, 1):
         t = {"nr": nr, "format": format,
-             "termin": datetime.combine(date.fromisocalendar(jahr, kw, tag), UHRZEIT).isoformat(timespec="minutes")}
+             "termin": datetime.combine(date.fromisocalendar(jahr, kw, tag), zeit).isoformat(timespec="minutes")}
         if format == "reel":
-            # Di wie bisher, Do die andere Länge, jedes Zusatz-Reel (Fr) kurz: am wenigsten ElevenLabs-Zeichen
-            t["laenge"] = reel_laenge(woche, 1) if tag == 2 else reel_laenge(woche, 3) if tag == 4 else "kurz"
+            # erstes Reel wie bisher, zweites die andere Länge, jedes Zusatz-Reel kurz: am wenigsten ElevenLabs-Zeichen
+            t["laenge"] = "kurz" if rolle == "kurz" else reel_laenge(woche, rolle)
         liste.append(t)
     return liste
 
