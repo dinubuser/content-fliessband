@@ -43,7 +43,7 @@ FLIESSBAND_ZEITZONE=Europe/Zurich
 
 `FLIESSBAND_HOST` ist die Adresse, auf der der Dienst lauscht. Ohne diese Datei lauscht er auf `127.0.0.1` und ist vom Mac aus nicht erreichbar. `FLIESSBAND_ZEITZONE` ist die Zeitzone der Termine und muss zu der deines Macs passen (Standard `Europe/Zurich`).
 
-**3. Zugang einrichten** (auf dem Mac). Das Skript legt auf dem Server `/etc/fliessband/geheim.env` an: Telegram-Token aus dem Schlüsselbund, Chat-ID aus `daten/bot.json` und einen neuen Schlüssel zwischen Mac und Server, den es auch im Schlüsselbund speichert. Nichts davon wird angezeigt.
+**3. Zugang einrichten** (auf dem Mac). Das Skript legt auf dem Server `/etc/fliessband/geheim.env` an: Telegram-Token aus dem Schlüsselbund, Chat-ID aus `daten/bot.json` und einen neuen Schlüssel zwischen Mac und Server, den es auch im Schlüsselbund speichert (`<Präfix>-briefkasten`, **überschreibt einen vorhandenen Eintrag gleichen Namens**, siehe Überblick, falls schon ein anderes Fliessband läuft). Nichts davon wird angezeigt.
 
 ```bash
 server/zugang.sh

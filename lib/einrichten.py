@@ -111,6 +111,11 @@ def _wert_pruefen(s: Schritt, u: Umfeld, name: str, was: str) -> bool:
                       f"{name} ist gesetzt" if _gesetzt(u, name) else f"{name} fehlt oder ist noch ein Platzhalter ({was})")
 
 
+def _dienst(u: Umfeld, art: str) -> str:
+    """Name des Schlüsselbund-Eintrags wie in lib/konfig.schluessel_dienst: <Präfix>-<Art>."""
+    return f"{(u.wert('FLIESSBAND_KEYCHAIN_PREFIX') or 'fliessband').strip() or 'fliessband'}-{art}"
+
+
 def _schluessel_pruefen(s: Schritt, u: Umfeld, dienst: str, konto: str | None, wofuer: str) -> bool:
     ok = bool(u.schluessel(dienst, konto)) if konto else bool(u.schluessel(dienst))
     return s.pruefung(ok, f"Schlüsselbund: {dienst} ist da" if ok else
@@ -165,13 +170,14 @@ def _stimme(u: Umfeld) -> Schritt:
     if _elevenlabs_schluessel_lokal(u):
         s.pruefung(True, "ElevenLabs-Schlüssel in .env.local oder der Umgebung da")
     else:
-        _schluessel_pruefen(s, u, "elevenlabs-api", None, "ElevenLabs-API-Schlüssel, alternativ ELEVENLABS_API_KEY in .env.local")
+        _schluessel_pruefen(s, u, (u.wert("FLIESSBAND_ELEVENLABS_DIENST") or "elevenlabs-api").strip(), None,
+                            "ElevenLabs-API-Schlüssel, alternativ ELEVENLABS_API_KEY in .env.local")
     return s
 
 
 def _telegram(u: Umfeld) -> Schritt:
     s = _schritt(4)
-    _schluessel_pruefen(s, u, "fliessband-telegram", None, "Token des Bots von @BotFather")
+    _schluessel_pruefen(s, u, _dienst(u, "telegram"), None, "Token des Bots von @BotFather")
     try:
         chat = json.loads((u.basis / "daten" / "bot.json").read_text(encoding="utf-8")).get("chat_id")
     except (OSError, ValueError, AttributeError):
@@ -192,7 +198,7 @@ def _wordpress(u: Umfeld) -> Schritt:
     else:
         _wert_pruefen(s, u, "FLIESSBAND_WP_URL", "Adresse deiner WordPress-Seite")
     if _wert_pruefen(s, u, "FLIESSBAND_WP_KONTO", "WordPress-Benutzer"):
-        dienst = (u.wert("FLIESSBAND_WP_DIENST") or "fliessband-wp").strip()
+        dienst = (u.wert("FLIESSBAND_WP_DIENST") or _dienst(u, "wp")).strip()
         _schluessel_pruefen(s, u, dienst, u.wert("FLIESSBAND_WP_KONTO").strip(), "WordPress-Anwendungspasswort")
     return s
 
@@ -205,7 +211,7 @@ def _server(u: Umfeld, online: bool) -> tuple[Schritt, bool]:
     if _wert_pruefen(s, u, "FLIESSBAND_SSH_KEY", "SSH-Schlüssel für den Server"):
         ok = Path(u.wert("FLIESSBAND_SSH_KEY").strip()).expanduser().is_file()
         s.pruefung(ok, "SSH-Schlüsseldatei da" if ok else "FLIESSBAND_SSH_KEY zeigt auf eine Datei, die es nicht gibt")
-    _schluessel_pruefen(s, u, "fliessband-briefkasten", "fliessband", "von server/zugang.sh angelegt")
+    _schluessel_pruefen(s, u, _dienst(u, "briefkasten"), "fliessband", "von server/zugang.sh angelegt")
     umgestellt = (u.basis / "daten" / "briefkasten.json").exists()
     s.pruefung(umgestellt, "Briefkasten umgestellt" if umgestellt else
                "Briefkasten noch nicht umgestellt: ./fliessband briefkasten umstellen")
@@ -255,7 +261,7 @@ def _instagram(u: Umfeld, online: bool, server_ok: bool) -> Schritt:
         s.pruefung(None, "Facebook (optional): nicht eingerichtet")
         return s
     _wert_pruefen(s, u, "FLIESSBAND_FB_SEITE", "Name der Facebook-Seite")
-    _schluessel_pruefen(s, u, "fliessband-facebook-app", (u.wert("FLIESSBAND_FB_KONTO") or "fliessband").strip(), "App-Geheimcode der Meta-App")
+    _schluessel_pruefen(s, u, _dienst(u, "facebook-app"), (u.wert("FLIESSBAND_FB_KONTO") or "fliessband").strip(), "App-Geheimcode der Meta-App")
     try:
         fb = bk.facebook_stand()
         s.pruefung(bool(fb.get("schluessel")), "Facebook: Seiten-Schlüssel da" if fb.get("schluessel") else

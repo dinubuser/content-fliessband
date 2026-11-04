@@ -28,3 +28,11 @@ def wert(name: str, standard: str = "") -> str:
         _lade_env_datei(ORDNER / ".env")
         _geladen = True
     return os.environ.get(name) or standard
+
+
+def schluessel_dienst(art: str) -> str:
+    """Name eines Schlüsselbund-Eintrags: <Präfix>-<Art>, zum Beispiel fliessband-telegram. Der Präfix
+    (FLIESSBAND_KEYCHAIN_PREFIX, Standard «fliessband») trennt zwei Fliessbänder auf demselben Mac: Ohne eigenen Präfix
+    läse ein zweites Fliessband (zum Beispiel ein Test von null) die Einträge des ersten und server/zugang.sh
+    überschriebe seinen Schlüssel."""
+    return f"{wert('FLIESSBAND_KEYCHAIN_PREFIX', 'fliessband').strip() or 'fliessband'}-{art}"

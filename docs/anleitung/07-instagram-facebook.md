@@ -64,6 +64,7 @@ Facebook ist freiwillig. Du brauchst eine Facebook-Seite und die Meta-App.
    ```bash
    security add-generic-password -s fliessband-facebook-app -a fliessband -w
    ```
+   Mit eigenem Präfix: `<präfix>-facebook-app`.
 3. Im **Graph API Explorer** von Meta einen kurzen Nutzer-Schlüssel für deine App erzeugen und in die Zwischenablage kopieren.
 4. Dann:
    ```bash

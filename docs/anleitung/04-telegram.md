@@ -16,7 +16,7 @@ Stand der Klickwege: November 2026, nicht von null getestet.
 security add-generic-password -s fliessband-telegram -a fliessband -w
 ```
 
-Der Befehl fragt das Token interaktiv ab. Es landet nicht in der Shell-Historie.
+Der Befehl fragt das Token interaktiv ab. Es landet nicht in der Shell-Historie. Mit eigenem Präfix (siehe Überblick) heisst der Dienst `<präfix>-telegram`.
 
 ## Bot mit dem Fliessband verbinden
 

@@ -25,7 +25,7 @@ Der API-Schlüssel ist geheim und kommt **nicht** in `.env`. Standardweg ist der
 security add-generic-password -s elevenlabs-api -a "$USER" -w
 ```
 
-Der Befehl fragt den Schlüssel interaktiv ab. Alternativ geht `ELEVENLABS_API_KEY` in der Umgebung oder in der Datei `.env.local` im Projektordner (nie in `.env`). Das Fliessband sucht in dieser Reihenfolge: Umgebung, `.env.local`, Schlüsselbund.
+Der Befehl fragt den Schlüssel interaktiv ab. Alternativ geht `ELEVENLABS_API_KEY` in der Umgebung oder in der Datei `.env.local` im Projektordner (nie in `.env`). Das Fliessband sucht in dieser Reihenfolge: Umgebung, `.env.local`, Schlüsselbund. Den Dienstnamen im Schlüsselbund kannst du mit `FLIESSBAND_ELEVENLABS_DIENST` ändern. Der Präfix gilt hier nicht, weil mehrere Programme denselben ElevenLabs-Schlüssel teilen dürfen: Dein zweites Fliessband darf ihn lesen, es ändert ihn nie.
 
 ## Aussprache
 

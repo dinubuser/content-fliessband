@@ -1,6 +1,6 @@
 """Verbindung zum Briefkasten auf dem Server (Etappe 4): Beiträge anmelden, Entscheide und Nachrichten abholen.
 Adresse und Lesestand stehen in daten/briefkasten.json. Fehlt die Datei, ist nicht umgestellt und der Mac fragt
-Telegram selbst ab wie in Etappe 3. Der API-Schlüssel liegt im Schlüsselbund (Dienst fliessband-briefkasten)
+Telegram selbst ab wie in Etappe 3. Der API-Schlüssel liegt im Schlüsselbund (Dienst <Präfix>-briefkasten, Standard fliessband-briefkasten)
 und erscheint nie in Meldungen oder Logs."""
 import fcntl
 import functools
@@ -13,10 +13,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
+from lib.konfig import schluessel_dienst
 from lib.manifest import schreibe_json
 from lib.netzgrund import netzgrund
 
-DIENST = "fliessband-briefkasten"
 KONTO = "fliessband"   # so legt server/zugang.sh den Schlüssel an
 DATEI = "briefkasten.json"
 ENTSCHEIDE = ("freigegeben", "zurueckgenommen", "aendern", "verworfen", "verpasst", "gepostet", "ausgelassen")
@@ -36,9 +36,10 @@ class BriefkastenFehler(Exception):
 
 @functools.lru_cache(maxsize=1)
 def _schluessel() -> str:
-    r = subprocess.run(["security", "find-generic-password", "-s", DIENST, "-a", KONTO, "-w"], capture_output=True, text=True)
+    dienst = schluessel_dienst("briefkasten")
+    r = subprocess.run(["security", "find-generic-password", "-s", dienst, "-a", KONTO, "-w"], capture_output=True, text=True)
     if r.returncode != 0 or not r.stdout.strip():
-        raise BriefkastenFehler("API-Schlüssel fehlt im Schlüsselbund (Dienst fliessband-briefkasten)")
+        raise BriefkastenFehler(f"API-Schlüssel fehlt im Schlüsselbund (Dienst {dienst})")
     return r.stdout.strip()
 
 

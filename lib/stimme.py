@@ -51,10 +51,11 @@ def _api_key() -> str:
     key = os.environ.get("ELEVENLABS_API_KEY") or _key_aus_env_datei()
     if key:
         return key
-    r = subprocess.run(["security", "find-generic-password", "-s", "elevenlabs-api", "-w"],
+    dienst = wert("FLIESSBAND_ELEVENLABS_DIENST", "elevenlabs-api")
+    r = subprocess.run(["security", "find-generic-password", "-s", dienst, "-w"],
                        capture_output=True, text=True)
     if r.returncode != 0 or not r.stdout.strip():
-        raise StimmFehler("ElevenLabs-Key fehlt (.env.local oder Schlüsselbund elevenlabs-api)")
+        raise StimmFehler(f"ElevenLabs-Key fehlt (.env.local oder Schlüsselbund {dienst})")
     return r.stdout.strip()
 
 

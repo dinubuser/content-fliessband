@@ -10,11 +10,11 @@ import urllib.request
 from pathlib import Path
 from typing import Callable
 
-from lib.konfig import wert
+from lib.konfig import schluessel_dienst, wert
 from lib.netzgrund import netzgrund
 
 ADRESSE = wert("FLIESSBAND_WP_URL", "https://example.com").rstrip("/") + "/wp-json/wp/v2/media"
-DIENST, KONTO = wert("FLIESSBAND_WP_DIENST", "fliessband-wp"), wert("FLIESSBAND_WP_KONTO", "your-wp-user")
+KONTO = wert("FLIESSBAND_WP_KONTO", "your-wp-user")
 TYPEN = {".jpg": "image/jpeg", ".mp4": "video/mp4"}
 ZEITLIMIT = 180
 MAX_GRUND = 200
@@ -37,10 +37,11 @@ class MediathekFehler(Exception):
 
 @functools.lru_cache(maxsize=1)
 def _passwort() -> str:
-    r = subprocess.run(["security", "find-generic-password", "-a", KONTO, "-s", DIENST, "-w"],
+    dienst = wert("FLIESSBAND_WP_DIENST") or schluessel_dienst("wp")
+    r = subprocess.run(["security", "find-generic-password", "-a", KONTO, "-s", dienst, "-w"],
                        capture_output=True, text=True)
     if r.returncode != 0 or not r.stdout.strip():
-        raise MediathekFehler("Passwort für example.com fehlt im Schlüsselbund (Dienst fliessband-wp)", dauerhaft=True)
+        raise MediathekFehler(f"WordPress-Passwort fehlt im Schlüsselbund (Dienst {dienst}, Konto {KONTO})", dauerhaft=True)
     return r.stdout.strip()
 
 

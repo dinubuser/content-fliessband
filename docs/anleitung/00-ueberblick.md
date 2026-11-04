@@ -24,6 +24,16 @@ Du hast Claude Code und die Social-Media-Agentur von Sebastian Kauffmann schon i
 
 Bei Problemen: [Fehlerbehebung](10-fehler.md).
 
+## Läuft auf diesem Mac schon ein anderes Fliessband?
+
+Dann **zuerst** in `.env` einen eigenen Präfix für den Schlüsselbund setzen, bevor du irgendeinen `security`-Befehl aus den Kapiteln ausführst:
+
+```
+FLIESSBAND_KEYCHAIN_PREFIX=meintest
+```
+
+Ohne eigenen Präfix heissen die Einträge `fliessband-telegram`, `fliessband-briefkasten` und so weiter. Ein zweites Fliessband würde dann das Token und den Schlüssel des ersten lesen, und `server/zugang.sh` würde den Schlüssel des ersten überschreiben. In den Kapiteln steht überall der Standardname `fliessband-...`. Mit eigenem Präfix ersetzt du `fliessband` am Anfang durch deinen Präfix (also `meintest-telegram`). Das gilt für den Test von null genauso wie für jede zweite Installation. Auch eigene Telegram-Bots, Server und Konten gehören dann getrennt.
+
 ## Der Assistent prüft jeden Schritt
 
 ```bash

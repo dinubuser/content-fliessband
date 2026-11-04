@@ -1,5 +1,5 @@
 """Telegram-Bot des Fliessbands: Fragen senden, Antworten lesen und zuordnen, Videos und Alben senden.
-Der Token liegt im Schlüsselbund (Dienst fliessband-telegram) und erscheint nie in Meldungen oder Logs.
+Der Token liegt im Schlüsselbund (Dienst <Präfix>-telegram, Standard fliessband-telegram) und erscheint nie in Meldungen oder Logs.
 Chat-ID und letzte Update-ID stehen in daten/bot.json. Telegram hält unbestätigte Updates höchstens 24 h,
 darum landen Betreiber-Nachrichten sofort im lokalen Eingang daten/bot-eingang.json und werden erst dort
 nach dem Speichern der Antworten entfernt."""
@@ -17,10 +17,10 @@ import uuid
 from pathlib import Path
 from typing import Callable
 
+from lib.konfig import schluessel_dienst
 from lib.manifest import schreibe_json
 from lib.netzgrund import netzgrund
 
-DIENST = "fliessband-telegram"
 API = "https://api.telegram.org"
 MAX_TEXT = 4000                      # Telegram nimmt höchstens 4096 Zeichen pro Nachricht
 MAX_ALBUM = 10                       # höchstens 10 Bilder pro Album
@@ -35,9 +35,10 @@ class BotFehler(Exception):
 
 @functools.lru_cache(maxsize=1)
 def _token() -> str:
-    r = subprocess.run(["security", "find-generic-password", "-s", DIENST, "-w"], capture_output=True, text=True)
+    dienst = schluessel_dienst("telegram")
+    r = subprocess.run(["security", "find-generic-password", "-s", dienst, "-w"], capture_output=True, text=True)
     if r.returncode != 0 or not r.stdout.strip():
-        raise BotFehler("Telegram-Token fehlt im Schlüsselbund (Dienst fliessband-telegram)")
+        raise BotFehler(f"Telegram-Token fehlt im Schlüsselbund (Dienst {dienst})")
     return r.stdout.strip()
 
 

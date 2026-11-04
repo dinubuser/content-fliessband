@@ -153,6 +153,19 @@ def test_elevenlabs_schluessel_darf_in_env_local_oder_umgebung_stehen(tmp_path):
     assert status(pruefe(u2))[3] == "ok"
 
 
+def test_eigener_schluesselbund_praefix(tmp_path):
+    """Ein zweites Fliessband auf demselben Mac (Test von null) nutzt eigene Namen und liest die des ersten nie."""
+    eigene = {("fbtest-telegram", None), ("elevenlabs-api", None), ("fbtest-wp", "redakteur"), ("fbtest-briefkasten", "fliessband")}
+    s = pruefe(gut(tmp_path, env={"FLIESSBAND_KEYCHAIN_PREFIX": "fbtest"}, schluessel=eigene))
+    assert [status(s)[n] for n in (3, 4, 5, 6)] == ["ok"] * 4
+    standard = {("fliessband-telegram", None), ("elevenlabs-api", None), ("fliessband-wp", "redakteur"), ("fliessband-briefkasten", "fliessband")}
+    s = pruefe(gut(tmp_path / "b", env={"FLIESSBAND_KEYCHAIN_PREFIX": "fbtest"}, schluessel=standard))
+    assert [status(s)[n] for n in (4, 5, 6)] == ["offen"] * 3 and "fbtest-telegram" in text(s)
+    # eigener ElevenLabs-Dienst
+    s = pruefe(gut(tmp_path / "c", env={"FLIESSBAND_ELEVENLABS_DIENST": "mein-el"}, schluessel={("mein-el", None), ("fliessband-telegram", None), ("fliessband-wp", "redakteur"), ("fliessband-briefkasten", "fliessband")}))
+    assert status(s)[3] == "ok"
+
+
 def test_schritt_4_telegram_chat_id(tmp_path):
     u = gut(tmp_path)
     (u.basis / "daten" / "bot.json").write_text(json.dumps({"letzte_update_id": 3}))

@@ -11,8 +11,9 @@ SSH=(ssh -i "${FLIESSBAND_SSH_KEY:-$HOME/.ssh/your_ssh_key}" -o IdentitiesOnly=y
 APP_ID="${FLIESSBAND_FB_APP_ID:-your-meta-app-id}"
 SEITE="${FLIESSBAND_FB_SEITE:-your-page-name}"
 KONTO="${FLIESSBAND_FB_KONTO:-fliessband}"
-GEHEIM="$(security find-generic-password -s fliessband-facebook-app -a "$KONTO" -w 2>/dev/null)" || {
-  echo "App-Geheimcode fehlt im Schlüsselbund (fliessband-facebook-app / $KONTO)." >&2
+PRAEFIX="${FLIESSBAND_KEYCHAIN_PREFIX:-fliessband}"
+GEHEIM="$(security find-generic-password -s "$PRAEFIX-facebook-app" -a "$KONTO" -w 2>/dev/null)" || {
+  echo "App-Geheimcode fehlt im Schlüsselbund ($PRAEFIX-facebook-app / $KONTO)." >&2
   exit 1
 }
 KURZ="$(pbpaste | tr -d '[:space:]')"

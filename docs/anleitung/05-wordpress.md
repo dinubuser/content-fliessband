@@ -29,7 +29,7 @@ Das Anwendungspasswort in den Schlüsselbund (nicht in `.env`):
 security add-generic-password -s fliessband-wp -a dein-wordpress-benutzer -w
 ```
 
-Den Dienstnamen `fliessband-wp` kannst du mit `FLIESSBAND_WP_DIENST` in `.env` ändern. Das Konto (`-a`) muss zu `FLIESSBAND_WP_KONTO` passen.
+Den Dienstnamen `fliessband-wp` kannst du mit `FLIESSBAND_WP_DIENST` in `.env` ändern. Mit eigenem Präfix heisst er `<präfix>-wp`. Das Konto (`-a`) muss zu `FLIESSBAND_WP_KONTO` passen.
 
 ## Prüfen
 
