@@ -24,6 +24,7 @@ Automatisches Content-Fliessband für Instagram und Facebook. Es plant, baut und
 ./fliessband woche vorbereiten|bauen|senden|anmelden|status [--woche 2026-KW44]
 ./fliessband lernen [--probe]         # Lern-Schleife: Instagram-Zahlen → learnings.md
 ./fliessband entscheide               # Freigaben aus Telegram umsetzen (launchd, alle 15 Min)
+./fliessband einrichten [--online]   # Einrichtung prüfen (neun Schritte, liest nur), Anleitung: docs/anleitung/
 ./fliessband bot einrichten           # Chat-ID speichern, nachdem /start geschickt wurde
 ./fliessband briefkasten umstellen    # Ab jetzt fragt der Server Telegram ab (einmalig)
 

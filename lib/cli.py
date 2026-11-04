@@ -7,6 +7,7 @@
   fliessband lernen [--probe]                 (Lern-Schleife: Instagram-Zahlen → learnings.md)
   fliessband entscheide                     (für launchd alle 15 Minuten)
   fliessband briefkasten umstellen [--adresse http://your-server-ip:8096]
+  fliessband einrichten [--online]          (Einrichtung prüfen: neun Schritte, liest nur, Anleitung docs/anleitung/)
   fliessband bot einrichten                 (nur vor der Umstellung)
   fliessband poster ein|aus|status          (automatisches Posten auf Instagram, Server)
   fliessband facebook ein|aus|status        (nach Instagram auch auf die Facebook-Seite, Server)
@@ -30,7 +31,7 @@ from lib.briefkasten import DATEI as BRIEFKASTEN_DATEI
 from lib.briefkasten import Briefkasten, BriefkastenFehler, umstellen
 from lib.claude_lauf import ClaudeLauf, ZeitAbgelaufen
 from lib.entscheide import EntscheidFehler, entscheide, wochen
-from lib import fakten, planer, trendscout
+from lib import einrichten, fakten, planer, trendscout
 from lib.fehler import BAU_FEHLER, einzeilig
 from lib.freigabe import manifest_pfad
 from lib import kalender
@@ -153,6 +154,12 @@ def _lernen(a) -> int:
     dienste = Dienste.echt(pfade, log.pfad)
     dienste.jetzt = uhr
     return fuehre_aus("lernen-probe" if a.probe else "lernen", woche, pfade, dienste, log)
+
+
+def _einrichten(a) -> int:
+    schritte = einrichten.pruefe(einrichten.Umfeld.echt(a.basis), online=a.online)
+    print(einrichten.text(schritte))
+    return einrichten.exitcode(schritte)
 
 
 def _bot(a) -> int:
@@ -368,6 +375,11 @@ def _parser() -> argparse.ArgumentParser:
                     help="nur Zahlen und Bericht zeigen, learnings.md bleibt, nichts nach Telegram, zählt nicht als Lauf")
     le.add_argument("--basis", type=Path, default=STANDARD_BASIS, help=argparse.SUPPRESS)
 
+    ei = unter.add_parser("einrichten", help="Einrichtung prüfen: Schritt für Schritt, ändert nichts",
+                          description="Prüft die Einrichtung in neun Schritten (Anleitung: docs/anleitung/) und nennt den "
+                                      "nächsten offenen Schritt. Liest nur, ändert nichts, zeigt keine Werte.")
+    ei.add_argument("--online", action="store_true", help="zusätzlich Server, Instagram und Facebook abfragen")
+    ei.add_argument("--basis", type=Path, default=STANDARD_BASIS, help=argparse.SUPPRESS)
     b = unter.add_parser("bot", help="Telegram-Bot des Fliessbands", description="Telegram-Bot des Fliessbands")
     bu = b.add_subparsers(dest="aktion", required=True)
     e = bu.add_parser("einrichten", help="Chat-ID speichern, nachdem du dem Bot /start geschickt hast",
@@ -447,6 +459,8 @@ def main(argv: list[str] | None = None) -> int:
             return _woche(a)
         if a.befehl == "lernen":
             return _lernen(a)
+        if a.befehl == "einrichten":
+            return _einrichten(a)
         if a.befehl == "bot":
             return _bot(a)
         if a.befehl == "entscheide":

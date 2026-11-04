@@ -51,11 +51,13 @@ Ohne Freigabe geht nichts online.
 
 Dieses Projekt baut auf der Social-Media-Agentur von **Sebastian Kauffmann** auf: <https://github.com/sebaskauf/social-agentur> (Skill `/agentur`). Die Agentur ist seine Arbeit. Sie muss zuerst installiert sein, danach kommt dieses Repo. Dieses Repo ist eine Erweiterung auf der Agentur und ersetzt sie nicht.
 
-Die Agentur liefert die Texte und die Daten: `profil.md`, `stimme.md`, `learnings.md` und `geschichten.md` im Agentur-Ordner. Ohne sie laufen Planer und Texter nicht. Das Agentur-Werkzeug liegt nicht in diesem Repo.
+Die Agentur liefert die Texte und die Daten: `profil.md`, `stimme.md` und `learnings.md` im Agentur-Ordner. Ohne sie laufen Planer und Texter nicht. `geschichten.md` legt das Fliessband selbst an. Das Agentur-Werkzeug liegt nicht in diesem Repo.
 
 ## Einrichtung
 
-1. **Agentur installieren.** Folge der Anleitung im Agentur-Repo. Der Skill muss unter `~/.claude/skills/agentur` liegen, der Agentur-Ordner unter `~/meine-agentur` (Pfade anpassbar in `.env`).
+**Ausführliche Anleitung:** [docs/anleitung/00-ueberblick.md](docs/anleitung/00-ueberblick.md), neun Schritte mit je einem Kapitel. Nach jedem Schritt prüft der Assistent `./fliessband einrichten` (mit `--online` auch Server und Instagram), was noch offen ist. Er liest nur und zeigt nie einen Schlüssel. Die Anleitung ist ein Entwurf und noch nicht von null auf frischen Konten getestet. Unten steht die Kurzfassung.
+
+1. **Agentur installieren.** Folge der Anleitung im Agentur-Repo. Der Skill muss unter `~/.claude/skills/agentur` liegen, der Agentur-Ordner unter `~/meine-agentur`. Die Agentur legt `meine-agentur/` dort an, wo du Claude Code startest, also `cd ~ && claude` vor `/agentur start`. Liegt er woanders, setze die Pfade in `.env`.
 
 2. **Repo klonen:**
 
@@ -134,6 +136,7 @@ Die Agentur liefert die Texte und die Daten: `profil.md`, `stimme.md`, `learning
 | `./fliessband woche vorbereiten\|bauen\|senden\|anmelden\|status [--woche 2026-KW44]` | Schritte der Woche einzeln ausführen oder den Stand zeigen |
 | `./fliessband lernen [--probe]` | Lern-Schleife jetzt ausführen (`--probe` zeigt nur die Zahlen) |
 | `./fliessband entscheide` | Entscheide aus Telegram umsetzen (läuft per launchd) |
+| `./fliessband einrichten [--online]` | Einrichtung prüfen: neun Schritte, nächster offener Schritt (liest nur) |
 | `./fliessband bot einrichten` | Chat-ID speichern, nachdem du dem Bot `/start` geschickt hast |
 | `./fliessband briefkasten umstellen` | Einmalig: Telegram-Abfrage an den Server übergeben |
 | `./fliessband poster ein\|aus\|status` | Automatisches Posten auf Instagram (Server) |

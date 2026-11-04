@@ -133,9 +133,8 @@ echo
 echo "=== Installation abgeschlossen ==="
 echo
 echo "Nächste Schritte:"
-echo "  1. .env ausfüllen (alle Platzhalter ersetzen). Geheimnisse nur in den Schlüsselbund, nie in .env."
-echo "  2. Tests prüfen: .venv/bin/pytest -q -m \"not langsam\""
-echo "  3. Telegram-Bot: Token in den Schlüsselbund, dem Bot /start schicken, dann ./fliessband bot einrichten"
-echo "  4. Einrichtung abschliessen (Server, Meta-App, Keychain): siehe README, Abschnitt Einrichtung"
-echo "  5. Wenn alles steht: ./install.sh --launchd"
+echo "  1. Anleitung lesen: docs/anleitung/00-ueberblick.md (neun Schritte, Konten, Server, Meta-App)"
+echo "  2. Nach jedem Schritt prüfen: ./fliessband einrichten (mit --online auch Server und Instagram)"
+echo "  3. .env ausfüllen (alle Platzhalter ersetzen). Geheimnisse nur in den Schlüsselbund, nie in .env."
+echo "  4. Wenn alles steht: ./install.sh --launchd"
 echo "  Claude Code liest CLAUDE.md automatisch: claude"
