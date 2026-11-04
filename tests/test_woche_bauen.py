@@ -138,7 +138,8 @@ def test_wiederaufnahme_nach_absturz_beim_bauen(wochen_umgebung, agentur_attrapp
     monkeypatch.setattr(woche, "baue_reel", echt)
     a2 = agentur_attrappe(fragen=0)
     _bauen(u, a2)
-    assert a2.aufrufe == []
+    # drei-fehler hat sein Ergebnis vor dem Absturz gespeichert: nur demokonto-woche wird noch geprüft
+    assert a2.aufrufe == [("fakten-agent", "fakten.json")]
     assert [s for _, s, _ in gebaut] == ["beispiel-reel-eins", "notgroschen-beispiel", "drei-fehler", "demokonto-woche"]
 
 

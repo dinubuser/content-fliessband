@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Callable
 
 from lib.manifest import schreibe_json
+from lib.netzgrund import netzgrund
 
 DIENST = "fliessband-telegram"
 API = "https://api.telegram.org"
@@ -104,7 +105,7 @@ def telegram_anfrage(methode: str, felder: dict, dateien: dict | None = None, wa
             beschreibung = str(koerper.get("description", ""))
             raise BotFehler(f"Telegram {methode} {e.code}: {beschreibung}".replace(token, "***")[:200]) from None
         except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException) as e:
-            raise BotFehler(f"Telegram nicht erreichbar ({type(e).__name__})") from None
+            raise BotFehler(f"Telegram nicht erreichbar ({type(e).__name__}: {netzgrund(e)})") from None
         except json.JSONDecodeError:
             raise BotFehler(f"Telegram {methode}: Antwort ist kein JSON") from None
     if not antwort.get("ok"):

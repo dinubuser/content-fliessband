@@ -9,9 +9,10 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
+from briefkasten.konto import stempel
 from briefkasten.telegram import oeffne_ipv4
 
 API = "https://graph.facebook.com"
@@ -205,3 +206,24 @@ class Facebook:
             if self.uhr() - start >= MAX_WARTEN:
                 raise FacebookFehler("Facebook hat das Reel nicht innert 10 Minuten veröffentlicht")
             self.schlafe(WARTEN)
+
+    def konto(self, tage: int, heute: date) -> dict:
+        """Follower der Seite, Aufrufe (page_media_view) der letzten 30 Tage und je Tag für die `tage` Tage vor heute."""
+        seite = self._seite()
+        profil = self._rufe("GET", f"/{seite}", {"fields": "followers_count,link"})
+        antwort = self._rufe("GET", f"/{seite}/insights", {
+            "metric": "page_media_view", "period": "day",
+            "since": stempel(heute - timedelta(days=30)), "until": stempel(heute)})
+        je_tag = {}
+        for m in antwort.get("data", []):
+            if m.get("name") != "page_media_view":
+                continue
+            for v in m.get("values", []):
+                ende = str(v.get("end_time", ""))[:10]
+                if ende and isinstance(v.get("value"), (int, float)):
+                    je_tag[(date.fromisoformat(ende) - timedelta(days=1)).isoformat()] = v["value"]
+        grenze = (heute - timedelta(days=tage)).isoformat()
+        return {"follower": profil.get("followers_count"),
+                "aufrufe_30t": sum(je_tag.values()) if je_tag else None,
+                "aufrufe_tage": {t: w for t, w in je_tag.items() if t >= grenze},
+                "link": profil.get("link")}

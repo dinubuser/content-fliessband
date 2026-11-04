@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Callable
 
 from lib.konfig import wert
+from lib.netzgrund import netzgrund
 
 ADRESSE = wert("FLIESSBAND_WP_URL", "https://example.com").rstrip("/") + "/wp-json/wp/v2/media"
 DIENST, KONTO = wert("FLIESSBAND_WP_DIENST", "fliessband-wp"), wert("FLIESSBAND_WP_KONTO", "your-wp-user")
@@ -62,7 +63,7 @@ class Mediathek:
             grund = grund.replace(pw, "…")[:MAX_GRUND]
             raise MediathekFehler(f"Mediathek {req.get_method()}: HTTP {e.code} {grund}".strip(), code=e.code) from None
         except (urllib.error.URLError, OSError, ValueError) as e:
-            raise MediathekFehler(f"Mediathek nicht erreichbar ({type(e).__name__})") from None
+            raise MediathekFehler(f"Mediathek nicht erreichbar ({type(e).__name__}: {netzgrund(e)})") from None
         if not isinstance(antwort, dict):
             raise MediathekFehler("Mediathek: unerwartete Antwort")
         return antwort

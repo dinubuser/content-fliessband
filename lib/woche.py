@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable
 
-from lib import freigabe, geschichten, guthaben, hochladen, instagram_medien, kalender, konkurrenz, lernen, notiz, planer, texter
+from lib import fakten, freigabe, geschichten, guthaben, hochladen, instagram_medien, kalender, konkurrenz, lernen, notiz, planer, texter, trendscout
 from lib.aussprache import hinweis as aussprache_hinweis, pruefer as aussprache_pruefer
 from lib.bauer import baue_karussell
 from lib.bot import VERSAND_GRENZE, Bot, BotFehler, ordne_zu, verkleinere
@@ -213,8 +213,15 @@ def vorbereiten(woche: str, pfade: Pfade, dienste: Dienste, log, fragen: bool = 
             ideen = []
             plan.vermerke(f"Apple-Notiz nicht gelesen: {einzeilig(e)}")
         log(f"{len(ideen)} offene Notiz-Ideen, {len(plan.daten['ausreisser'])} Ausreisser")
+        # Etappe 11: Trend-Scout (Standard aus). Scheitert nie: ohne Themen plant der Planer wie bisher.
+        trends, trend_vermerk = trendscout.sammle(
+            pfade, woche, fakten.schreibgeschuetzt(dienste.claude, pfade.agentur),
+            planer.letzte_themen(pfade.basis / "wochen", woche))
+        if trend_vermerk:
+            plan.vermerke(trend_vermerk)
+            log(trend_vermerk)
         themen, reserve = planer.plane(pfade, woche, ideen, plan.daten["ausreisser"], dienste.claude,
-                                       fragen_erlaubt=fragen)
+                                       fragen_erlaubt=fragen, trends=trends)
         plan.daten["themen"], plan.daten["reserve"] = themen, reserve
         plan.schritt_fertig("vorbereitet", dienste.jetzt())
         log("Themen geplant: " + ", ".join(f"{t['nr']} {t['slug']}" for t in themen))
@@ -234,8 +241,8 @@ def _test_text(t: dict) -> str:
 def uebersicht(plan: Wochenplan) -> str:
     """Erste Nachricht des Wochenpakets: Termine mit Thema, Quelle, Test und Vermerken."""
     d = plan.daten
-    tl = kalender.termine(d["woche"])
-    z = [f"Wochenpaket {d['woche']} ({kurz(tl[0]['termin'])} bis {kurz(tl[-1]['termin'])}), nichts ist gepostet.",
+    tage = sorted(t["termin"] for t in (plan.aktive() or plan.themen))   # echte Termine, egal ob 4 oder 6 Plätze
+    z = [f"Wochenpaket {d['woche']} ({kurz(tage[0])} bis {kurz(tage[-1])}), nichts ist gepostet.",
          ""]
     for t in plan.aktive():
         quelle = QUELLE_NAME.get(t["quelle"]["art"], t["quelle"]["art"])
@@ -302,7 +309,7 @@ def status_text(plan: Wochenplan, beitraege: dict | None = None, umgestellt: boo
 def sende_beitrag(t: dict, woche: str, pfade: Pfade, dienste: Dienste) -> None:
     """Reel als Video (über 50 MB verkleinert, Original bleibt), Karussell als Album, Caption darunter.
     Liegt ein Reel über der Hinweis-Grenze seiner Länge, folgt ein Hinweis.
-    Neue Aussprache-Einträge folgen als eigene Zeile."""
+    Neue Aussprache-Einträge folgen als eigene Zeile, der Faktencheck ebenso."""
     ordner = Path(t["ordner"])
     if t["format"] == "reel":
         mp4 = ordner / "reel.mp4"
@@ -318,6 +325,9 @@ def sende_beitrag(t: dict, woche: str, pfade: Pfade, dienste: Dienste) -> None:
     zeile = aussprache_hinweis(t.get("aussprache_neu")) if t["format"] == "reel" else None
     if zeile:
         dienste.bot.sende_text(zeile)
+    fakten_zeile = fakten.hinweis(t.get("fakten"))
+    if fakten_zeile:
+        dienste.bot.sende_text(fakten_zeile)
 
 
 def termin_erreicht(t: dict, dienste: Dienste) -> bool:
@@ -610,6 +620,10 @@ def _baue(plan: Wochenplan, pfade: Pfade, dienste: Dienste, frist: Frist, log) -
 
         def arbeit(t=t):
             log(f"Thema {t['nr']}: {FORMAT_NAME[t['format']]} bauen")
+            if not (t.get("fakten") or {}).get("lief"):   # nach einem Absturz nicht nochmal prüfen
+                fakten_lauf = mit_frist(fakten.schreibgeschuetzt(dienste.claude, pfade.agentur), frist)
+                t["fakten"] = fakten.pruefe_beitrag(Path(t["beitrag"]), t["format"], fakten_lauf, pfade.basis)
+                plan.speichere()
             termin = datetime.fromisoformat(t["termin"])
             if t["format"] == "reel":
                 pruefer = aussprache_pruefer(mit_frist(dienste.claude, frist),

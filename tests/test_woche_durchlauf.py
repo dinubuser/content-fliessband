@@ -32,7 +32,7 @@ def test_ganze_woche_mit_echten_bauern(wochen_umgebung, agentur_attrappe, schnel
     manifest = json.loads((ordner / "manifest.json").read_text(encoding="utf-8"))
     assert sorted(b["id"] for b in manifest["beitraege"]) == [
         "2026-KW44-demokonto-woche", "2026-KW44-notgroschen-beispiel",
-        "2026-KW44-reel-drei-fehler", "2026-KW44-reel-beispiel-reel-eins"]
+        "2026-KW44-reel-beispiel-reel-eins", "2026-KW44-reel-drei-fehler"]
     assert {b["termin"] for b in manifest["beitraege"]} == {
         "2026-10-27T19:00", "2026-10-28T19:00", "2026-10-29T19:00", "2026-10-31T19:00"}
     karussell = next(t for t in plan.aktive() if t["slug"] == "notgroschen-beispiel")

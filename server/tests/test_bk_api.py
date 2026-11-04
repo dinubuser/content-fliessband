@@ -223,3 +223,14 @@ def test_kommentare_adressen(ablauf):
 def test_kommentare_ohne_einrichtung_unbekannt(adresse):
     assert _rufe(adresse, "GET", "/kommentare")[0] == 404
     assert _rufe(adresse, "POST", "/kommentare", {"an": True})[0] == 404
+
+
+def test_konto_ueber_http(api_poster):
+    ablauf, rufe = api_poster
+    code, antwort = rufe("GET", "/konto?tage=30")
+    assert code == 200 and antwort["konten"]["instagram"]["follower"] == 412
+    assert "facebook" not in antwort["konten"]   # api_poster hat kein Facebook
+    assert rufe("GET", "/konto?tage=31")[0] == 400
+    ablauf.poster.ig.konto_fehler = RuntimeError("Instagram HTTP 400: kaputt")
+    code, antwort = rufe("GET", "/konto")
+    assert code == 200 and antwort["konten"]["instagram"] == {"fehler": "Instagram HTTP 400: kaputt"}

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Content-Fliessband: Installation auf dem Mac. Wiederholbar, ändert nichts, was schon stimmt.
 #
-#   ./install.sh            Voraussetzungen, Python- und Node-Pakete, .env, Aussprache-Agent
+#   ./install.sh            Voraussetzungen, Python- und Node-Pakete, .env, Agenten
 #   ./install.sh --launchd  zusätzlich die Jobs in launchd einrichten (erst, wenn .env ausgefüllt ist)
 #
 # Liest und schreibt keine Geheimnisse: der Schlüsselbund bleibt unangetastet.
@@ -97,23 +97,25 @@ else
   echo "  Die Social-Media-Agentur von Sebastian Kauffmann muss zuerst installiert sein (README, Abschnitt Voraussetzungen)."
 fi
 
-# --- 5. Aussprache-Agent ----------------------------------------------------------------
-schritt "Aussprache-Agent"
-quelle="docs/agents/aussprache-agent.md"
+# --- 5. Agenten (Aussprache, Faktencheck, Trend-Scout) ----------------------------------
+schritt "Agenten (Aussprache, Faktencheck, Trend-Scout)"
 ziel_ordner="$HOME/.claude/agents"
-ziel="$ziel_ordner/aussprache-agent.md"
-if [[ -f "$quelle" ]]; then
-  mkdir -p "$ziel_ordner"
-  if [[ ! -f "$ziel" ]]; then
-    cp "$quelle" "$ziel"
-    echo "  installiert: $ziel"
-  elif cmp -s "$quelle" "$ziel"; then
-    echo "  schon aktuell: $ziel"
-  else
-    echo "  $ziel gibt es schon und weicht ab. Nicht überschrieben."
-    echo "  Bei Bedarf von Hand übernehmen: cp $quelle $ziel"
+for name in aussprache-agent fakten-agent trend-scout; do
+  quelle="docs/agents/$name.md"
+  ziel="$ziel_ordner/$name.md"
+  if [[ -f "$quelle" ]]; then
+    mkdir -p "$ziel_ordner"
+    if [[ ! -f "$ziel" ]]; then
+      cp "$quelle" "$ziel"
+      echo "  installiert: $ziel"
+    elif cmp -s "$quelle" "$ziel"; then
+      echo "  schon aktuell: $ziel"
+    else
+      echo "  $ziel gibt es schon und weicht ab. Nicht überschrieben."
+      echo "  Bei Bedarf von Hand übernehmen: cp $quelle $ziel"
+    fi
   fi
-fi
+done
 
 # --- 6. launchd (nur mit --launchd) -----------------------------------------------------
 schritt "launchd-Jobs"

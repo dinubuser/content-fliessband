@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, unquote, urlparse
 
 from briefkasten.instagram import InstagramFehler
+from briefkasten.konto import sammle, tage_aus
 from briefkasten.telegram import TelegramFehler
 
 LOG = logging.getLogger("briefkasten.api")
@@ -95,6 +96,11 @@ def baue_server(ablauf, schluessel: str, adresse: tuple[str, int]) -> ThreadingH
                 return self._fuehre(lambda: _zahlen(ablauf, url.query))
             if url.path == "/kommentare" and ablauf.kommentare is not None:
                 return self._fuehre(ablauf.kommentare.stand)
+            if url.path == "/konto" and ablauf.poster is not None:
+                konten = {"instagram": ablauf.poster.ig}
+                if ablauf.poster.fb is not None:
+                    konten["facebook"] = ablauf.poster.fb
+                return self._fuehre(lambda: sammle(konten, tage_aus(url.query)))
             self._antworte(404, {"fehler": "unbekannte Adresse"})
 
         def do_POST(self):

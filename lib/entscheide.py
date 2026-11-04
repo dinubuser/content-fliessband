@@ -7,7 +7,7 @@ import shutil
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-from lib import freigabe, guthaben, hochladen, manifest, texter
+from lib import fakten, freigabe, guthaben, hochladen, manifest, texter
 from lib.aussprache import pruefer as aussprache_pruefer
 from lib.bauer import baue_karussell
 from lib.bot import BotFehler
@@ -81,9 +81,14 @@ def _pruefe_guthaben(alt: Path, neu: Path, dienste) -> None:
 
 
 def _baue(t: dict, beitrag: Path, pfade, dienste, frist=None):
+    lauf = mit_frist(dienste.claude, frist) if frist else dienste.claude
+    # Neue Fassungen müssen freigebbar bleiben (_pruefe_platzhalter): offene Funde nur melden, kein Marker
+    fakten_lauf = fakten.schreibgeschuetzt(dienste.claude, pfade.agentur)
+    if frist:
+        fakten_lauf = mit_frist(fakten_lauf, frist)
+    t["fakten"] = fakten.pruefe_beitrag(beitrag, t["format"], fakten_lauf, pfade.basis, markiere_offen=False)
     termin = datetime.fromisoformat(t["termin"])
     if t["format"] == "reel":
-        lauf = mit_frist(dienste.claude, frist) if frist else dienste.claude
         pruefer = aussprache_pruefer(lauf, pfade.basis / "zwischenspeicher" / "aussprache")
         return baue_reel(beitrag, termin=termin, basis=pfade.basis, anfrage=dienste.stimme, laenge=t.get("laenge"),
                          aussprache_pruefer=pruefer)
@@ -174,6 +179,7 @@ def _aendere(e, plan, t, pfade, dienste, log) -> None:
         start_schluss_fehlt = False
         alte_dauer = t.get("dauer_s")
         alte_aussprache = t.get("aussprache_neu")
+        alte_fakten = t.get("fakten")
         try:
             _, eintrag_neu = _baue(t, neu, pfade, dienste, frist)
             gebaut = True
@@ -185,6 +191,10 @@ def _aendere(e, plan, t, pfade, dienste, log) -> None:
             freigabe.aendere(pfad, woche, id, **{k: alt[k] for k in FREIGABE_FELDER if k in alt})
             sende_beitrag(t, woche, pfade, dienste)
         except BaseException:
+            if alte_fakten is None:
+                t.pop("fakten", None)
+            else:
+                t["fakten"] = alte_fakten
             if t["format"] == "reel":
                 t["dauer_s"] = alte_dauer
                 if alte_aussprache is None:

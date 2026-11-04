@@ -1,7 +1,7 @@
 import io
 import json
 import urllib.error
-from datetime import datetime
+from datetime import date, datetime
 
 import pytest
 from hilfen_bk import Antworten
@@ -234,3 +234,18 @@ def test_schon_gepostet_zeitzone_und_id(schluessel):
     seit = datetime(2026, 10, 28, 18, 55, tzinfo=ZONE)
     fb, _, _ = _fb(schluessel, {"data": [{"message": "T", "created_time": "2026-10-28T18:00:05+0000"}]})
     assert fb.schon_gepostet("T", seit) is None
+
+
+def test_konto_seite(schluessel):
+    fb, a, _ = _fb(schluessel,
+                   {"followers_count": 156, "link": "https://www.facebook.com/dein.konto", "id": "777"},
+                   {"data": [{"name": "page_media_view", "period": "day", "values": [
+                       {"value": 20, "end_time": "2026-10-26T07:00:00+0000"},
+                       {"value": 30, "end_time": "2026-10-27T07:00:00+0000"},
+                       {"value": 40, "end_time": "2026-10-28T07:00:00+0000"}]}]})
+    werte = fb.konto(2, date(2026, 10, 28))
+    assert werte == {"follower": 156, "aufrufe_30t": 90,
+                     "aufrufe_tage": {"2026-10-26": 30, "2026-10-27": 40},
+                     "link": "https://www.facebook.com/dein.konto"}
+    assert a.anfragen[0] == ("GET", "/v26.0/777", {"fields": "followers_count,link"})
+    assert a.anfragen[1][1] == "/v26.0/777/insights" and a.anfragen[1][2]["metric"] == "page_media_view"

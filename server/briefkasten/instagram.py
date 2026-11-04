@@ -8,9 +8,10 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
+from briefkasten.konto import stempel, summe
 from briefkasten.telegram import oeffne_ipv4
 
 API = "https://graph.instagram.com"
@@ -268,3 +269,24 @@ class Instagram:
         if not neu.get("access_token"):
             raise InstagramFehler("Instagram: kein neuer Schlüssel erhalten")
         self.schluessel.speichere(dict(d, token=neu["access_token"], erstellt=heute.isoformat()))
+
+    def konto(self, tage: int, heute: date) -> dict:
+        """Follower, Aufrufe der letzten 30 Tage und Aufrufe je Tag für die `tage` Tage vor heute (Social-Kacheln)."""
+        user = self._user()
+        profil = self._rufe("GET", f"/{user}", {"fields": "followers_count,username"})
+
+        def aufrufe(von: date, bis: date):
+            return summe(self._rufe("GET", f"/{user}/insights", {
+                "metric": "views", "period": "day", "metric_type": "total_value",
+                "since": stempel(von), "until": stempel(bis)}), "views")
+
+        je_tag = {}
+        for n in range(1, tage + 1):
+            tag = heute - timedelta(days=n)
+            wert = aufrufe(tag, tag + timedelta(days=1))
+            if wert is not None:
+                je_tag[tag.isoformat()] = wert
+        return {"follower": profil.get("followers_count"),
+                "aufrufe_30t": aufrufe(heute - timedelta(days=30), heute),
+                "aufrufe_tage": je_tag,
+                "link": f"https://www.instagram.com/{profil['username']}/" if profil.get("username") else None}

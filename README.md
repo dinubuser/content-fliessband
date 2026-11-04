@@ -11,15 +11,15 @@ Automatisches Content-Fliessband für Instagram und Facebook: plant, baut und po
 Jede Woche läuft derselbe Zyklus:
 
 1. **Fr 20:00, Lern-Schleife:** wertet die Zahlen der letzten Beiträge aus und schreibt `learnings.md` fort.
-2. **Fr 22:00, Planung:** Der Wochen-Planer legt 4 Beiträge fest (2 Reels, 2 Karussells) und stellt offene Fragen.
-3. **Sa 22:00, Bau:** Texte, Bilder, Stimme, Video und der Aussprache-Check entstehen automatisch.
+2. **Fr 22:00, Planung:** Der Wochen-Planer legt 4 Beiträge fest (2 Reels, 2 Karussells, mit dem Schalter `plaetze` 6) und stellt offene Fragen. Ist der Trend-Scout eingeschaltet, sucht er davor im Web nach aktuellen Themen.
+3. **Sa 22:00, Bau:** Texte, Bilder, Stimme, Video, Aussprache-Check und Faktencheck entstehen automatisch.
 4. **Freigabe in Telegram:** Jeder Beitrag kommt mit ✅ Freigeben, ✏️ Ändern oder ❌ Verwerfen.
 5. **Di, Mi, Do, Sa 19:00:** Der Server postet die freigegebenen Beiträge auf Instagram und, wenn eingeschaltet, auf Facebook.
 6. **START-Kommentare:** Der Server liest die Kommentare und meldet jedes «START» in Telegram.
 
 Ohne Freigabe geht nichts online.
 
-## Die neun Stufen
+## Die elf Stufen
 
 1. **Karussell-Bauer:** baut Karussells aus Agentur-Beiträgen (`lib/bauer.py`).
 2. **Reel-Bauer:** baut Erklär-Reels mit ElevenLabs-Stimme und HyperFrames (`lib/reel_bauer.py`).
@@ -30,6 +30,8 @@ Ohne Freigabe geht nichts online.
 7. **Kurze und mittlere Reels:** die Länge wird geprüft. Reels über 60 Sekunden bekommen einen Hinweis.
 8. **Aussprache-Check:** findet Wörter, die die Stimme falsch spricht, und schlägt einen Ersatz vor (`lib/aussprache.py`, `docs/agents/aussprache-agent.md`).
 9. **Kontakt per START:** Der Server meldet START-Kommentare in Telegram (`server/briefkasten/kommentare.py`).
+10. **Faktencheck:** prüft Zahlen und Behauptungen jedes Beitrags vor dem Bauen gegen Quellen, Schalter `fakten` (`lib/fakten.py`, `docs/agents/fakten-agent.md`).
+11. **Trend-Scout:** sucht am Freitag im Web nach aktuellen Themen für den Planer, Schalter `trends`, Standard aus (`lib/trendscout.py`, `docs/agents/trend-scout.md`).
 
 ## Voraussetzungen
 
@@ -68,7 +70,7 @@ Die Agentur liefert die Texte und die Daten: `profil.md`, `stimme.md`, `learning
    ./install.sh
    ```
 
-   Das Skript prüft die Voraussetzungen, legt `.venv` an, installiert die Python- und Node-Pakete, legt `.env` aus `.env.example` an und kopiert den Aussprache-Agenten nach `~/.claude/agents/`. Es fasst den Schlüsselbund nicht an. Mit `--launchd` richtet es zusätzlich die Jobs ein (Schritt 9).
+   Das Skript prüft die Voraussetzungen, legt `.venv` an, installiert die Python- und Node-Pakete, legt `.env` aus `.env.example` an und kopiert die Agenten für Aussprache, Faktencheck und Trend-Scout nach `~/.claude/agents/`. Es fasst den Schlüsselbund nicht an. Mit `--launchd` richtet es zusätzlich die Jobs ein (Schritt 9).
 
 4. **`.env` ausfüllen.** Ersetze alle Platzhalter (`your-…`, `your_…`, `example.com`, `@dein.konto`). Geheimnisse gehören nicht in `.env`.
 
@@ -147,6 +149,7 @@ Die Regeln für Stimme, Marke und Themen sind Beispiele. Sie stehen mit dem Mark
 - `lib/lernen.py`: Vorgaben für den Bericht der Lern-Schleife
 - `lib/konkurrenz.py`: Gruppen von Konkurrenz-Accounts
 - `docs/agents/aussprache-agent.md`: Helvetismen, Abkürzungen und das Handle
+- `docs/agents/trend-scout.md` und `lib/trendscout.py`: Themenfelder und Quellen für die Web-Suche
 - `aussprache.txt`: Wörter, die die Stimme anders aussprechen soll (Format: `Wort → Ersatz`)
 
 Ersetze die Beispiele durch deine eigene Stimme, Marke und Regeln. Die Figuren in `vorlagen/reel-a/figuren/` lassen sich ebenfalls durch eigene Grafiken ersetzen.

@@ -27,6 +27,11 @@ Automatisches Content-Fliessband für Instagram und Facebook. Es plant, baut und
 ./fliessband bot einrichten           # Chat-ID speichern, nachdem /start geschickt wurde
 ./fliessband briefkasten umstellen    # Ab jetzt fragt der Server Telegram ab (einmalig)
 
+# Mac: Schalter ohne Server
+./fliessband fakten ein|aus|status    # Faktencheck vor dem Bauen (Standard an)
+./fliessband trends ein|aus|status|jetzt   # Trend-Scout (Standard aus), jetzt = von Hand laufen lassen
+./fliessband plaetze 4|6|status       # Beiträge pro Woche (Standard 4)
+
 # Server: Schalter (laufen über den Briefkasten)
 ./fliessband poster ein|aus|status
 ./fliessband facebook ein|aus|status
@@ -57,6 +62,9 @@ lib/                  Mac: Wochenablauf, Planer, Texter, Bau, Freigabe
   bauer.py            Karussell-Bau (vorlagen/karussell-a)
   reel_bauer.py       Reel-Bau: ElevenLabs, HyperFrames
   aussprache.py       Aussprache-Check mit aussprache.txt
+  fakten.py           Faktencheck vor dem Bauen (Agent fakten-agent, Schalter)
+  trendscout.py       Trend-Scout: Web-Themen als Quelle für den Planer (Schalter, Standard aus)
+  netzgrund.py        Grund bei Netzfehlern als festes Wort für Meldungen und Logs
   entscheide.py       Freigaben vom Server holen und umsetzen
   briefkasten.py      Mac-Seite: HTTP-Client zum Server
   bot.py              Telegram-Bot (Mac, bis zur Umstellung)
@@ -68,7 +76,7 @@ server/briefkasten/   Server (Linux, systemd-Dienst)
   texte.py            Telegram-Texte
 launchd/              Mac-Jobs: woche.sh, entscheide.sh, installieren.sh
 vorlagen/             karussell-a (Folien), reel-a (Szenen, Figuren)
-docs/agents/          Aussprache-Agent (wird nach ~/.claude/agents/ kopiert)
+docs/agents/          Agenten Aussprache, Faktencheck, Trend-Scout (install.sh kopiert sie nach ~/.claude/agents/)
 tests/, server/tests/ pytest
 daten/, wochen/, logs/, zwischenspeicher/   Laufzeitdaten, nicht in Git
 ```
@@ -115,6 +123,9 @@ Die Regeln für Stimme, Marke und Themen sind Beispiele. Sie stehen mit dem Mark
 - Nichts geht ohne Freigabe online. Der Server postet nur freigegebene Beiträge zum Termin.
 - Geheimnisse nie in Git und nie in `.env`. Schlüssel liegen im Schlüsselbund bzw. in `geheim.env`.
 - Aussprache: Auto-Funde landen in `daten/aussprache-auto.txt` (nicht in Git). `aussprache.txt` gewinnt bei gleichem Wort.
+- Faktencheck: Läuft vor dem Bauen jedes Beitrags (Schalter `fakten`, Log `logs/fakten.log`). Ohne brauchbare Korrektur wird eine Stelle «offen» (Marker [prüfen]), der Betreiber klärt sie. Die Prüfung lässt nie einen Bau scheitern.
+- Plätze pro Woche: `fliessband plaetze 4|6`. Mit 6 kommen Mo Karussell und Fr Reel dazu. Der Planer liest Zahl und Formate aus den Terminen.
+- Trend-Scout: Standard aus. Ein Websuche-Lauf pro Woche beim Planen (Zeitlimit 8 Minuten, höchstens 12 Suchen, 10 Themen), Ergebnis `wochen/<KW>/trends.json`, Log `logs/trendscout.log`. Fällt die Suche aus, plant der Planer ohne Trend-Quelle.
 - Kontakt: Jeder Beitrag endet mit «… Kommentiere START.». Der Server meldet START-Kommentare in Telegram. Keine automatischen Antworten, keine Links in Beitrag oder Bio.
 
 ## Contributing

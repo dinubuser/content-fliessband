@@ -1,11 +1,18 @@
 """Zielwoche, Termine und Zeitfenster der Wochen-Jobs (lokale Zeit, Europe/Zurich)."""
+import json
 import re
 from datetime import date, datetime, time, timedelta
+from pathlib import Path
 
-from lib.manifest import woche_von
+from lib.manifest import schreibe_json, woche_von
 
 # Thema-Nr, Format, ISO-Wochentag: Di Reel, Mi Karussell, Do Reel, Sa Karussell, je 19:00
 WOCHENPLAN = [(1, "reel", 2), (2, "karussell", 3), (3, "reel", 4), (4, "karussell", 6)]
+# Sechser-Plan (Schalter «plaetze» = 6, Standard bleibt 4): Mo Karussell und Fr Reel kommen dazu.
+# Die Nummern laufen hier nach Datum, damit Übersicht und Planer in Terminreihenfolge arbeiten.
+WOCHENPLAN_6 = [(1, "karussell", 1), (2, "reel", 2), (3, "karussell", 3), (4, "reel", 4), (5, "reel", 5),
+                (6, "karussell", 6)]
+PLAETZE_DATEI = Path("daten") / "plaetze.json"   # relativ zur Basis, nicht in Git; fehlt sie, gilt 4
 UHRZEIT = time(19, 0)
 WOCHE_MUSTER = re.compile(r"^(\d{4})-KW(\d{2})$")
 TAGE = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
@@ -52,16 +59,32 @@ def reel_laenge(woche: str, nr: int) -> str:
     return "mittel" if dienstag == "kurz" else "kurz"
 
 
-def termine(woche: str) -> list[dict]:
-    """Die 4 Termine der Woche: [{nr, format, termin 'YYYY-MM-DDT19:00'}], Reels zusätzlich mit laenge."""
+def plaetze(basis: Path) -> int:
+    """Plätze pro Woche aus dem Schalter: 4 (Standard) oder 6. Fehlende oder ungültige Datei gilt als 4."""
+    try:
+        wert = json.loads((Path(basis) / PLAETZE_DATEI).read_text(encoding="utf-8")).get("plaetze", 4)
+    except (OSError, ValueError, AttributeError):
+        return 4
+    return wert if type(wert) is int and wert in (4, 6) else 4
+
+
+def setze_plaetze(basis: Path, anzahl: int) -> None:
+    if anzahl not in (4, 6):
+        raise KalenderFehler(f"Plätze pro Woche: nur 4 oder 6, nicht {anzahl}")
+    schreibe_json(Path(basis) / PLAETZE_DATEI, {"plaetze": anzahl})
+
+
+def termine(woche: str, plaetze: int = 4) -> list[dict]:
+    """Die Termine der Woche (4 oder 6), nach Datum: [{nr, format, termin 'YYYY-MM-DDT19:00'}], Reels mit laenge."""
     pruefe_woche(woche)
     jahr, kw = int(woche[:4]), int(woche[-2:])
     liste = []
-    for nr, format, tag in WOCHENPLAN:
+    for nr, format, tag in (WOCHENPLAN_6 if plaetze == 6 else WOCHENPLAN):
         t = {"nr": nr, "format": format,
              "termin": datetime.combine(date.fromisocalendar(jahr, kw, tag), UHRZEIT).isoformat(timespec="minutes")}
         if format == "reel":
-            t["laenge"] = reel_laenge(woche, nr)
+            # Di wie bisher, Do die andere Länge, jedes Zusatz-Reel (Fr) kurz: am wenigsten ElevenLabs-Zeichen
+            t["laenge"] = reel_laenge(woche, 1) if tag == 2 else reel_laenge(woche, 3) if tag == 4 else "kurz"
         liste.append(t)
     return liste
 

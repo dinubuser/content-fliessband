@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Callable
 
 from lib.manifest import schreibe_json
+from lib.netzgrund import netzgrund
 
 DIENST = "fliessband-briefkasten"
 KONTO = "fliessband"   # so legt server/zugang.sh den Schlüssel an
@@ -62,7 +63,7 @@ def http(adresse: str, schluessel: Callable[[], str] = _schluessel, oeffne=urlli
             raise BriefkastenFehler(f"Briefkasten {methode} {ohne_abfrage}: HTTP {e.code} {grund[:MAX_GRUND]}".strip(),
                                     code=e.code) from None
         except (urllib.error.URLError, OSError, ValueError) as e:
-            raise BriefkastenFehler(f"Briefkasten nicht erreichbar ({type(e).__name__})") from None
+            raise BriefkastenFehler(f"Briefkasten nicht erreichbar ({type(e).__name__}: {netzgrund(e)})") from None
         try:
             antwort = json.loads(roh or b"{}")
         except ValueError:

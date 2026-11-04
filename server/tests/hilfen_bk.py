@@ -170,6 +170,15 @@ class FalschesInstagram:
         self.aufrufe.append(("letzte", (anzahl,)))
         return self.letzte_liste
 
+    konto_werte = {"follower": 412, "aufrufe_30t": 4812, "aufrufe_tage": {}, "link": "https://www.instagram.com/dein.konto/"}
+    konto_fehler = None
+
+    def konto(self, tage, heute):
+        self.aufrufe.append(("konto", (tage, heute)))
+        if self.konto_fehler:
+            raise self.konto_fehler
+        return dict(self.konto_werte)
+
     def methoden(self):
         return [m for m, _ in self.aufrufe]
 
@@ -234,6 +243,12 @@ class FalschesFacebook:
 
     def link(self, video_id):
         return f"https://www.facebook.com/reel/{video_id}"
+
+    konto_werte = {"follower": 156, "aufrufe_30t": 2140, "aufrufe_tage": {}, "link": "https://www.facebook.com/dein.konto"}
+
+    def konto(self, tage, heute):
+        self.aufrufe.append(("konto", (tage, heute)))
+        return dict(self.konto_werte)
 
     def methoden(self):
         return [m for m, _ in self.aufrufe]

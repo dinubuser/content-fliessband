@@ -10,7 +10,11 @@
   fliessband bot einrichten                 (nur vor der Umstellung)
   fliessband poster ein|aus|status          (automatisches Posten auf Instagram, Server)
   fliessband facebook ein|aus|status        (nach Instagram auch auf die Facebook-Seite, Server)
-  fliessband kommentare ein|aus|status      (START-Kommentare auf Instagram in Telegram melden, Server)"""
+  fliessband kommentare ein|aus|status      (START-Kommentare auf Instagram in Telegram melden, Server)
+  fliessband fakten ein|aus|status          (Faktencheck vor dem Bauen, läuft lokal)
+  fliessband trends ein|aus|status          (Trend-Scout: Web-Themen für den Planer am Freitag, Standard aus)
+  fliessband trends jetzt [--woche 2026-KW46]  (Scout von Hand starten, Themen ansehen; Freitag nutzt dieselbe Datei)
+  fliessband plaetze 4|6|status             (Beiträge pro Woche: 4 Standard, 6 mit Mo Karussell und Fr Reel)"""
 import argparse
 import sys
 from datetime import datetime
@@ -26,8 +30,10 @@ from lib.briefkasten import DATEI as BRIEFKASTEN_DATEI
 from lib.briefkasten import Briefkasten, BriefkastenFehler, umstellen
 from lib.claude_lauf import ClaudeLauf, ZeitAbgelaufen
 from lib.entscheide import EntscheidFehler, entscheide, wochen
+from lib import fakten, planer, trendscout
 from lib.fehler import BAU_FEHLER, einzeilig
 from lib.freigabe import manifest_pfad
+from lib import kalender
 from lib.kalender import FORMAT_NAME, KalenderFehler, kurz, pruefe_woche, zielwoche
 from lib.leser import LeserFehler  # noqa: F401 (Tests greifen auf cli.LeserFehler zu)
 from lib.reel_bauer import baue_reel
@@ -81,17 +87,24 @@ def _melde(ziel: Path, eintrag: dict) -> None:
 def _baue(a) -> int:
     # Name im Modul nachschlagen, damit Tests baue_reel/baue_karussell ersetzen können
     bauen = baue_karussell if a.befehl == "karussell" else baue_reel
+    pfade = Pfade(basis=a.basis)
     mehr = {}
     if a.befehl == "reel":
-        pfade = Pfade(basis=a.basis)
         lauf = ClaudeLauf(cwd=pfade.agentur, log=pfade.basis / "logs" / "aussprache.log")
         mehr["aussprache_pruefer"] = aussprache_pruefer(lauf, pfade.basis / "zwischenspeicher" / "aussprache")
     try:
+        # Faktencheck arbeitet direkt an der Quelldatei, die der Bauer danach liest
+        fakten_lauf = fakten.schreibgeschuetzt(
+            ClaudeLauf(cwd=pfade.agentur, log=pfade.basis / "logs" / "fakten.log"), pfade.agentur)
+        ergebnis = fakten.pruefe_beitrag(Path(a.quelle).expanduser().resolve(), a.befehl, fakten_lauf, pfade.basis)
         ziel, eintrag = bauen(a.quelle, termin=a.termin, basis=a.basis, **mehr)
     except BEKANNTE_FEHLER as e:
         print(f"Fehler: {einzeilig(e)}", file=sys.stderr)
         return 1
     _melde(ziel, eintrag)
+    zeile = fakten.hinweis(ergebnis)
+    if zeile:
+        print(f"  {zeile}")
     return 0
 
 
@@ -261,6 +274,37 @@ def _facebook(a) -> int:
     return 0
 
 
+def _fakten(a) -> int:
+    pfade = Pfade(basis=a.basis)
+    if a.aktion in ("ein", "aus"):
+        fakten.setze(pfade.basis, a.aktion == "ein")
+    print(fakten.schalter_text(pfade.basis))
+    return 0
+
+
+def _trends(a) -> int:
+    pfade = Pfade(basis=a.basis)
+    if a.aktion in ("ein", "aus"):
+        trendscout.setze(pfade.basis, a.aktion == "ein")
+    if a.aktion == "jetzt":
+        woche = a.woche or zielwoche(uhr().date())
+        log = Protokoll(pfade.log(woche, "trends"))
+        dienste = Dienste.echt(pfade, log.pfad)
+        print(trendscout.handlauf(pfade, woche, fakten.schreibgeschuetzt(dienste.claude, pfade.agentur),
+                                  planer.letzte_themen(pfade.basis / "wochen", woche)))
+        return 0
+    print(trendscout.schalter_text(pfade.basis))
+    return 0
+
+
+def _plaetze(a) -> int:
+    pfade = Pfade(basis=a.basis)
+    if a.aktion in ("4", "6"):
+        kalender.setze_plaetze(pfade.basis, int(a.aktion))
+    print(f"Plätze pro Woche: {kalender.plaetze(pfade.basis)}")
+    return 0
+
+
 def kommentare_text(stand: dict) -> str:
     runde = stand.get("letzte_runde")
     z = [f"Kommentare: {'an' if stand.get('an') else 'aus'}",
@@ -365,6 +409,34 @@ def _parser() -> argparse.ArgumentParser:
                         ("status", "Schalter, Anzahl Kommentare und letzte Runde zeigen")]:
         s = kou.add_parser(name, help=hilfe, description=hilfe)
         s.add_argument("--basis", type=Path, default=STANDARD_BASIS, help=argparse.SUPPRESS)
+    fk = unter.add_parser("fakten", help="Faktencheck vor dem Bauen ein- oder ausschalten",
+                          description="Faktencheck vor dem Bauen ein- oder ausschalten")
+    fku = fk.add_subparsers(dest="aktion", required=True)
+    for name, hilfe in [("ein", "Faktencheck einschalten (Standard)"),
+                        ("aus", "Faktencheck ausschalten (Notausgang)"),
+                        ("status", "Schalter zeigen")]:
+        s = fku.add_parser(name, help=hilfe, description=hilfe)
+        s.add_argument("--basis", type=Path, default=STANDARD_BASIS, help=argparse.SUPPRESS)
+    tr = unter.add_parser("trends", help="Trend-Scout (Web-Themen für den Planer) ein- oder ausschalten",
+                          description="Trend-Scout vor dem Planer ein- oder ausschalten (Standard aus)")
+    tru = tr.add_subparsers(dest="aktion", required=True)
+    for name, hilfe in [("ein", "Trend-Scout einschalten (ein Websuche-Lauf pro Woche)"),
+                        ("aus", "Trend-Scout ausschalten (Standard)"),
+                        ("status", "Schalter zeigen"),
+                        ("jetzt", "Scout jetzt von Hand laufen lassen und die Themen zeigen (Datei bleibt für Freitag)")]:
+        s = tru.add_parser(name, help=hilfe, description=hilfe)
+        if name == "jetzt":
+            s.add_argument("--woche", type=_woche_arg,
+                           help="z.B. 2026-KW46 (ohne: die Woche nach dem laufenden Wochenende)")
+        s.add_argument("--basis", type=Path, default=STANDARD_BASIS, help=argparse.SUPPRESS)
+    pl = unter.add_parser("plaetze", help="Beiträge pro Woche: 4 (Standard) oder 6",
+                          description="Beiträge pro Woche: 4 (Standard) oder 6 (Mo Karussell und Fr Reel dazu)")
+    plu = pl.add_subparsers(dest="aktion", required=True)
+    for name, hilfe in [("4", "Vier Beiträge pro Woche (Standard)"),
+                        ("6", "Sechs Beiträge pro Woche (Mo Karussell und Fr Reel dazu)"),
+                        ("status", "Schalter zeigen")]:
+        s = plu.add_parser(name, help=hilfe, description=hilfe)
+        s.add_argument("--basis", type=Path, default=STANDARD_BASIS, help=argparse.SUPPRESS)
     return parser
 
 
@@ -387,6 +459,12 @@ def main(argv: list[str] | None = None) -> int:
             return _facebook(a)
         if a.befehl == "kommentare":
             return _kommentare(a)
+        if a.befehl == "fakten":
+            return _fakten(a)
+        if a.befehl == "trends":
+            return _trends(a)
+        if a.befehl == "plaetze":
+            return _plaetze(a)
         return _baue(a)
     except KeyboardInterrupt:
         print("Abgebrochen.", file=sys.stderr)

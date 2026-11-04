@@ -45,6 +45,11 @@ def _lauf(u, a, briefkasten, rest=30000, log=None):
                                  (log if log is not None else []).append)
 
 
+def _letzter(a):
+    """Letzter Auftrag ohne den Faktencheck (Etappe 10 hängt dem Neubau einen fakten-agent-Aufruf an)."""
+    return [x for x in a.auftraege if x[0] != "fakten-agent"][-1]
+
+
 def _thema(u, slug):
     return next(t for t in Wochenplan.lade(u.pfade.plan(WOCHE), WOCHE).themen if t["slug"] == slug)
 
@@ -60,7 +65,7 @@ def test_aendern_karussell(gesendet, briefkasten):
     assert _lauf(u, a, briefkasten) == 1
     t = _thema(u, "notgroschen-beispiel")
     assert t["beitrag"] == str(vorher.with_name(vorher.stem + "_v2.md")) and Path(t["beitrag"]).exists()
-    agent, auftrag = a.auftraege[-1]
+    agent, auftrag = _letzter(a)
     assert agent == "content-agent" and "Slide 3 ist zu voll" in auftrag
     e = _e(u, KARUSSELL)
     assert (e["status"], e["version"], e["neubauten"], e["entschieden"]) == ("entwurf", 2, 1, None)
@@ -328,7 +333,7 @@ def test_aendern_braucht_eingabe_ohne_platzhalter_wird_entwurf(gesendet, briefka
     _braucht_eingabe(u)
     briefkasten.ereignis("aendern", beitrag=KARUSSELL, notiz="Betrag: 3000 Fr.")
     assert _lauf(u, a, briefkasten) == 1
-    _, auftrag = a.auftraege[-1]
+    _, auftrag = _letzter(a)
     assert "Slide 3: [Betrag in Fr.]" in auftrag and "Platzhalter" in auftrag
     e = _e(u, KARUSSELL)
     assert (e["status"], e["version"], e["neubauten"]) == ("entwurf", 2, 1)
@@ -379,14 +384,14 @@ def test_zweite_aendern_runde_bekommt_alle_notizen(gesendet, briefkasten, monkey
     assert "Caption: [B]" in grund and "Slide 3: [A]" in grund and "frühere Notizen zählen mit" in grund
     briefkasten.ereignis("aendern", beitrag=KARUSSELL, notiz="B ist 12 Monate", zeit="2026-10-25T10:00:00+01:00")
     assert _lauf(u, a, briefkasten) == 1
-    _, auftrag = a.auftraege[-1]
+    _, auftrag = _letzter(a)
     assert auftrag.index("A ist 3000 Fr.") < auftrag.index("B ist 12 Monate")
     e = _e(u, KARUSSELL)
     assert (e["status"], e["version"], len(e["notizen"]), e["notizen_ab"]) == ("entwurf", 2, 2, 2)
     briefkasten.ereignis("aendern", beitrag=KARUSSELL, version=2, notiz="Slide 1 kürzer",
                          zeit="2026-10-25T11:00:00+01:00")
     assert _lauf(u, a, briefkasten) == 1
-    _, auftrag = a.auftraege[-1]
+    _, auftrag = _letzter(a)
     assert "Slide 1 kürzer" in auftrag and "A ist 3000 Fr." not in auftrag and "B ist 12 Monate" not in auftrag
 
 
@@ -514,7 +519,7 @@ def test_aendern_ohne_start_korrektur_und_standardsatz(gesendet, briefkasten):
     briefkasten.ereignis("aendern", beitrag=KARUSSELL, notiz="Slide 3 ist zu voll")
     assert _lauf(u, a, briefkasten) == 1
     assert a.anzahl("content-agent") == vorher + 2                  # Korrekturlauf wegen START
-    assert "Kommentiere START" in a.auftraege[-1][1]
+    assert "Kommentiere START" in _letzter(a)[1]
     t = _thema(u, "notgroschen-beispiel")
     assert START_STANDARD in (Path(t["ordner"]) / "caption.txt").read_text(encoding="utf-8")
     assert "START-Satz in der Caption ergänzt" in t["vermerk"]

@@ -28,6 +28,15 @@ def _kleines_png() -> bytes:
 KLEINES_PNG = _kleines_png()
 
 
+@pytest.fixture(autouse=True)
+def kein_echter_faktencheck(request, monkeypatch):
+    """CLI-Tests bauen von Hand und würden sonst den echten Faktencheck (claude -p) starten.
+    Die Tests für den Check selbst (test_fakten*.py) und test_cli_fakten.py bleiben unberührt."""
+    if request.module.__name__.startswith("test_cli") and request.module.__name__ != "test_cli_fakten":
+        from lib import fakten
+        monkeypatch.setattr(fakten, "pruefe_beitrag", lambda *a, **k: None)
+
+
 @pytest.fixture
 def karussell_quelle():
     return FIXTURES / "karussell_beispiel-thema_v2.md"
@@ -335,6 +344,7 @@ class FalscheAgentur:
         self.aufrufe = []     # (Agent oder Werkzeug, Ausgabe-Name oder erstes Argument)
         self.auftraege = []   # (Agent, Auftrag)
         self.aussprache_funde = []   # Antwort des aussprache-agent (Etappe 8)
+        self.fakten_antwort = {"geprueft": 0, "funde": []}   # Antwort des fakten-agent (Etappe 10), auch Funktion(auftrag)
 
     def claude(self, agent, auftrag, ausgabe, werkzeuge=("Read", "Write"), ordner=(), zeitlimit=900):
         ausgabe = Path(ausgabe)
@@ -344,12 +354,19 @@ class FalscheAgentur:
             raise KeyboardInterrupt
         if agent == "trend-agent" and ausgabe.name == "themen.json":
             inhalt = json.dumps(themen_json(self.woche, self.fragen, self.notiz, self.konkurrenz), ensure_ascii=False)
+        elif agent == "trend-scout":
+            inhalt = json.dumps({"themen": [{"thema": "Prämien 2027 steigen", "hook_idee": "Deine Prämie steigt schon wieder",
+                                             "format": "reel", "quelle": "https://www.bag.admin.ch/praemien",
+                                             "weiterschick": "an die Schwester mit zwei Kindern"}]}, ensure_ascii=False)
         elif agent == "trend-agent":
             inhalt = json.dumps({"accounts": [{"name": f"neu.{i}", "grund": "Beispiel-Account mit Reels"} for i in range(8)]})
         elif agent == "follower-agent":
             inhalt = json.dumps([URTEIL])
         elif agent == "aussprache-agent":
             inhalt = json.dumps({"funde": self.aussprache_funde}, ensure_ascii=False)
+        elif agent == "fakten-agent":
+            antwort = self.fakten_antwort(auftrag) if callable(self.fakten_antwort) else self.fakten_antwort
+            inhalt = json.dumps(antwort, ensure_ascii=False)
         elif agent == "viral-agent" and self.viral_text is not None:
             inhalt = self.viral_text
         else:

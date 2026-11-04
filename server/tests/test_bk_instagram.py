@@ -338,3 +338,25 @@ def test_pruefe_ohne_kommentare_wie_bisher(schluessel):
     ig, a, _ = _ig(schluessel, {"user_id": "1784"})
     assert ig.pruefe() == {}
     assert len(a.anfragen) == 1
+
+
+def test_konto_follower_und_aufrufe(schluessel):
+    ig, a, _ = _ig(schluessel,
+                   {"followers_count": 412, "username": "dein.konto", "id": "1784"},
+                   {"data": [{"name": "views", "period": "day", "total_value": {"value": 160}}]},
+                   {"data": [{"name": "views", "period": "day", "total_value": {"value": 143}}]},
+                   {"data": [{"name": "views", "period": "day", "total_value": {"value": 4812}}]})
+    werte = ig.konto(2, date(2026, 10, 28))
+    assert werte == {"follower": 412, "aufrufe_30t": 4812,
+                     "aufrufe_tage": {"2026-10-27": 160, "2026-10-26": 143},
+                     "link": "https://www.instagram.com/dein.konto/"}
+    assert a.anfragen[0] == ("GET", "/v26.0/1784", {"fields": "followers_count,username"})
+    assert a.anfragen[1][1] == "/v26.0/1784/insights"
+    assert a.anfragen[1][2]["metric"] == "views" and a.anfragen[1][2]["metric_type"] == "total_value"
+
+
+def test_konto_schluessel_ungueltig(schluessel):
+    ig, _, _ = _ig(schluessel, (400, {"error": {"code": 190, "message": f"abgelaufen {GEHEIM}"}}))
+    with pytest.raises(InstagramFehler) as e:
+        ig.konto(1, date(2026, 10, 28))
+    assert e.value.ungueltig and GEHEIM not in str(e.value)
