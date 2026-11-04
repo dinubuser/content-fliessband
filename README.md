@@ -2,9 +2,9 @@
 
 Automatisches Content-Fliessband für Instagram und Facebook: plant, baut und postet jede Woche 2 Reels und 2 Karussells. Du gibst nur in Telegram frei.
 
-[![Content-Fliessband in 25 Sekunden](docs/media/brag.jpg)](docs/media/brag.mp4)
+[![Content-Fliessband in 30 Sekunden](docs/media/brag.jpg)](docs/media/brag.mp4)
 
-*Klick aufs Bild für das Video (25 s). Gezeigt sind echte Beiträge von @papiblog.ch, für die das Fliessband ursprünglich gebaut wurde.*
+*Klick aufs Bild für das Video (30 s). Gezeigt sind echte Beiträge von @papiblog.ch, für die das Fliessband ursprünglich gebaut wurde.*
 
 > **Wichtig: Stand und Test.** Der Code ist gut getestet (über 1500 automatische Tests). Die Anleitung unter [docs/anleitung](docs/anleitung/00-ueberblick.md) ist dagegen ein **Entwurf**: Sie wurde **nicht von null auf frischen Konten durchgespielt**. Die Klickwege bei Fremddiensten (Telegram, ElevenLabs, WordPress, Tailscale, Meta) sind Stand November 2026 und können abweichen. Rechne damit, dass einzelne Schritte nicht genau so klappen. `./fliessband einrichten` prüft, was noch offen ist. Nutzung auf eigene Verantwortung, siehe Lizenz. Rückmeldungen sind willkommen (Issues).
 
